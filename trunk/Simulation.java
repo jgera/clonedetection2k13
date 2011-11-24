@@ -190,14 +190,19 @@ public class Simulation {
 				}
 			    else throw new IllegalValueException("p");
 			}
-			if(next.equals("r"))
+			if(next.equals("r")){
 				if(x>0.0){
 					r=x;
 					parent.getResultArea().append("r="+r+"\n");
 					return;
 				}
 				else throw new IllegalValueException("r");
-		}	
+			}
+		}
+		
+		else{	//not valid character for "next"
+			throw new IllegalValueException(" per sendGetRequest");
+		}
 	}
 	
 	public void config(){
@@ -205,7 +210,7 @@ public class Simulation {
 			//connection with the config_file URL
 			connect();
 		else{
-			//the file configuration link is not a .txt
+			//the configuration file link is not a .txt
 			//(gestire il caso in cui il link inserito non sia accettabile
 			System.out.println("link del file di conf inserito non valido");
 			parent.getResultArea().append("Config file link not valid");
@@ -218,21 +223,24 @@ public class Simulation {
 		}catch (IOException e) {
 			e.printStackTrace();
 			parent.getResultArea().append("\nErrore di comunicazione con l'host inserito");
+			parent.resetInitialState();
 			return;
-			//Thread.currentThread().interrupt();	//instead of return to the calling method (ProjGUI.actionperformed()), interrupt the Thread! (??)
 		} catch (IllegalValueException i) {
 			parent.getResultArea().append("\n"+i.getError());
+			parent.resetInitialState();
 			return;
-			//Thread.currentThread().interrupt();
 		} catch(NumberFormatException nfe){	//if the parsed string in Tokenize() does not contain a parsable float
 			parent.getResultArea().append("\nFormato di un campo FLOAT non accettabile");
+			parent.resetInitialState();
 			return;
-			//Thread.currentThread().interrupt();
 		} catch(InputMismatchException ime){	//if the parsed int in Tokenize() isn't actually an int!
 			parent.getResultArea().append("\nFormato di un campo INT non accettabile");
+			parent.resetInitialState();
 			return;
-			//Thread.currentThread().interrupt();
 		}
+		//(parent.resetinitialstate() va bene per ogni errore,ma non so se si può mettere il finally{} perchè mi par di ricordare che si entra lì)
+		//(anche quando non entra in nessun catch. DA VEDERE)
 		//let's the REAL simulation start...
+		System.out.println("Tutto ok!");
 	}
 }
