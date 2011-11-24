@@ -9,7 +9,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class Simulation extends Thread {
+public class Simulation {
 	private String config_file="www.math.unipd.it/~conti/teaching/PCD1112/project_config.txt";
 	private String host_rmi="localhost";
 	private String host_conf, file="";
@@ -28,12 +28,11 @@ public class Simulation extends Thread {
 		parent= par;
 	}
 	
-	public void strtknize(){
-		//the URL address must begin with www. and not with http:// or https://
+	public boolean strtknize(){
+		//the URL address must begin with "www." and not with "http://" or "https://"
 		if(config_file.startsWith("http")){
 			config_file=config_file.replace("http://", "");
 			config_file=config_file.replace("https://", "");
-
 		}
 		//split the config_file URL in
 		//host_conf= the website for the socket connection, and
@@ -46,6 +45,14 @@ public class Simulation extends Thread {
 			if(strtok.hasMoreTokens())
 				file+="/";
 		}
+		//
+		file=file.trim();
+		System.out.println(file);
+		if(file.endsWith(".txt"))
+			return true;
+		else
+			return false;
+		
 	}
 	
 	public void connect(){
@@ -57,6 +64,8 @@ public class Simulation extends Thread {
 		} catch (UnknownHostException i){
 			i.printStackTrace();
 			parent.getResultArea().append("\nImpossibile stabilire connessione con l'host "+config_file);
+			parent.getResultArea().append("\nInserire un link al file di configurazione valido");
+			parent.resetInitialState();
 			//System.exit(-1);
 		}
 		catch(IOException e){
@@ -191,12 +200,18 @@ public class Simulation extends Thread {
 		}	
 	}
 	
-	
-	
-	public void run(){
-		strtknize();
-		//connection with the config_file URL
-		connect();
+	public void config(){
+		if(strtknize())
+			//connection with the config_file URL
+			connect();
+		else{
+			//the file configuration link is not a .txt
+			//(gestire il caso in cui il link inserito non sia accettabile
+			System.out.println("link del file di conf inserito non valido");
+			parent.getResultArea().append("Config file link not valid");
+			parent.resetInitialState();
+			return;
+		}
 		try {
 			sendGetRequest();
 			receiveGetResponse();

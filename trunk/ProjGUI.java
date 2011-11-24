@@ -63,17 +63,21 @@ public class ProjGUI implements ActionListener{
 	public JTextArea getResultArea(){
 		return resultarea;
 	}
-
+	public void resetInitialState(){
+		start.setEnabled(true);
+		stop.setEnabled(false);
+	}
 	public void actionPerformed(ActionEvent e) {
 		String pressed=e.getActionCommand();
 		if(pressed=="Start"){
 			start.setEnabled(false);
 			stop.setEnabled(true);
+			resultarea.setText("");
 			System.out.println("Inizio simulazione");
 			resultarea.append("\n"+pressed);
 			//let's the simulation begin
 			simulation= new Simulation(conf_tf.getText(), servrmi_tf.getText(), this);
-			simulation.start();
+			simulation.config();
 		}
 		if(pressed=="Stop"){
 			stop.setEnabled(false);
@@ -81,7 +85,7 @@ public class ProjGUI implements ActionListener{
 			System.out.println("Fine simulazione");
 			resultarea.append("\n"+pressed);
 			//stop the simulation
-			simulation.interrupt();
+//			simulation.interrupt();
 		}
 	}
 
