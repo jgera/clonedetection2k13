@@ -7,8 +7,8 @@ public class ProjGUI implements ActionListener{
 	private JFrame jf= new JFrame("Clone Detection");
 	private JLabel conf_lab= new JLabel("Inserire URL file di configurazione");
 	private JLabel servrmi_lab= new JLabel ("Inserire URL del server RMI");
-	private JTextField conf_tf= new JTextField();
-	private JTextField servrmi_tf= new JTextField();
+	private JTextField conf_tf= new JTextField("www.math.unipd.it/~conti/teaching/PCD1112/project_config.txt");
+	private JTextField servrmi_tf= new JTextField("localhost");
 	JScrollPane scrollta= new JScrollPane();
 	private JTextArea resultarea= new JTextArea(30,90);
 	private JButton start= new JButton("Start");
@@ -46,9 +46,6 @@ public class ProjGUI implements ActionListener{
 		jf.add(cont, BorderLayout.CENTER);
 		jf.add(area,BorderLayout.SOUTH);
 		//end layout.
-		//Default text in the text fields
-		conf_tf.setText("www.math.unipd.it/~conti/teaching/PCD1112/project_config.txt");
-		servrmi_tf.setText("localhost");
 		//frame behaviors
 		jf.pack();
 		jf.setResizable(false);

@@ -238,9 +238,9 @@ public class Simulation {
 			parent.resetInitialState();
 			return;
 		}
-		//(parent.resetinitialstate() va bene per ogni errore,ma non so se si può mettere il finally{} perchè mi par di ricordare che si entra lì)
-		//(anche quando non entra in nessun catch. DA VEDERE)
 		//let's the REAL simulation start...
 		System.out.println("Tutto ok!");
+		//creation of the Hypervisor
+		//paragraph 3, SIMULATOR!
 	}
 }
