@@ -241,6 +241,11 @@ public class Simulation {
 		//let's the REAL simulation start...
 		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
+		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r);
+		for(int i=0; i<nsim; i++){
+			hyp.init_usa(); //initialization of the unite-square area
+			//Attacco clone!
+		}
 		//paragraph 3, SIMULATOR!
 	}
 }
