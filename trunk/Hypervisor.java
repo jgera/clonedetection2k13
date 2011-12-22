@@ -13,9 +13,9 @@ public class Hypervisor {
 		n=n_in;			//number of nodes in the network
 		e=e_in;			//Total energy for each nodes
 		e_send=e_s;		//Energy spent for sending a message
-		e_rec=e_r;		//Energy spent for receiveing  a message
+		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
-		p=p_in;			//Probability for a neighbour node to process a location claim
+		p=p_in;			//Probability for a neighbor node to process a location claim
 		r=r_in;			//Communication radius of a node
 	}
 

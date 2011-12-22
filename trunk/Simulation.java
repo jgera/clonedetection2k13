@@ -9,7 +9,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class Simulation {
+public class Simulation extends Thread{
 	private String config_file="www.math.unipd.it/~conti/teaching/PCD1112/project_config.txt";
 	private String host_rmi="localhost";
 	private String host_conf, file="";
@@ -20,7 +20,7 @@ public class Simulation {
 	private Integer nsim,g,n,e,e_send,e_receive,e_sign;
 	private Float p,r;
 
-	public Simulation(String conf_file, String host, ProjGUI par) {
+	public Simulation(String conf_file, String host, ProjGUI par){
 		if(!conf_file.isEmpty())
 			config_file= conf_file;
 		if(!host.isEmpty())
@@ -205,7 +205,7 @@ public class Simulation {
 		}
 	}
 	
-	public void config(){
+	public void run(){
 		if(strtknize())
 			//connection with the config_file URL
 			connect();
