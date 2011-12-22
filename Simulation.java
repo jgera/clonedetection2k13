@@ -241,11 +241,12 @@ public class Simulation extends Thread{
 		//let's the REAL simulation start...
 		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
-		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r);
-		for(int i=0; i<nsim; i++){	//nsim simulations
+		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r,nsim);
+		for(int i=0; i<1; i++){	//nsim simulations		//SOSTITUIRE 1 con nsim!!!!!
 			System.out.println(i);
 			hyp.init_usa(); //initialization of the unite-square area
 			//Attacco clone!
+			hyp.attack();
 		}
 		//paragraph 3, SIMULATOR!
 	}

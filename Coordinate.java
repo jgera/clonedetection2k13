@@ -19,15 +19,15 @@ public class Coordinate {
         return y;
     }
     
-    /*public boolean compresaInArea(Coordinata centro, double raggio){
-        boolean compresaX = false, compresaY = false;
-        if( x >= (centro.getX()-raggio) && x <= (centro.getX()+raggio) ){
-            compresaX = true;
+    public boolean hasNeighbor(Coordinate seekneigh, float radius){	//it controls if this node has the node with coordinate "seekneigh" in its neighborhood
+        boolean inX = false, inY = false;
+        if( x >= (seekneigh.getX()-radius) && x <= (seekneigh.getX()+radius) ){
+            inX = true;
         }
-        if( y >= (centro.getY()-raggio) && y <= (centro.getY()+raggio) ){
-            compresaY = true;
+        if( y >= (seekneigh.getY()-radius) && y <= (seekneigh.getY()+radius) ){
+            inY = true;
         }
-        return (compresaY && compresaX);
-    }*/
+        return (inX && inY);
+    }
 
 }
