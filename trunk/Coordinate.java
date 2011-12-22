@@ -20,14 +20,12 @@ public class Coordinate {
     }
     
     public boolean hasNeighbor(Coordinate seekneigh, float radius){	//it controls if this node has the node with coordinate "seekneigh" in its neighborhood
-        boolean inX = false, inY = false;
-        if( x >= (seekneigh.getX()-radius) && x <= (seekneigh.getX()+radius) ){
-            inX = true;
-        }
-        if( y >= (seekneigh.getY()-radius) && y <= (seekneigh.getY()+radius) ){
-            inY = true;
-        }
-        return (inX && inY);
+    	Double diff_x= x-seekneigh.getX();
+    	Double diff_y= y-seekneigh.getY();
+    	//distance between two points, calculated with Pythagoras Theorem
+    	Float pita= (float) Math.sqrt((diff_x*diff_x)+(diff_y*diff_y));
+    	if(pita<=radius)
+    		return true;
+    	else return false;
     }
-
 }
