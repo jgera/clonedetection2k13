@@ -19,6 +19,8 @@ public class Simulation extends Thread{
 	private String proto;
 	private Integer nsim,g,n,e,e_send,e_receive,e_sign;
 	private Float p,r;
+	private static int cont_sim;
+	private boolean stop=false;
 
 	public Simulation(String conf_file, String host, ProjGUI par){
 		if(!conf_file.isEmpty())
@@ -205,6 +207,10 @@ public class Simulation extends Thread{
 		}
 	}
 	
+	public void setStop(boolean flag){
+		stop=flag;
+	}
+	
 	public void run(){
 		if(strtknize())
 			//connection with the config_file URL
@@ -242,11 +248,12 @@ public class Simulation extends Thread{
 		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
 		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r,nsim);
-		for(int i=0; i<1; i++){	//nsim simulations		//SOSTITUIRE 1 con nsim!!!!!
-			System.out.println(i);
-			hyp.init_usa(); //initialization of the unite-square area
-			//Attacco clone!
-			hyp.attack();
+		while(!stop && cont_sim<nsim){
+				System.out.println(cont_sim);
+				hyp.init_usa(); //initialization of the unite-square area
+				//Attacco clone!
+				//hyp.attack();
+				cont_sim++;
 		}
 		//paragraph 3, SIMULATOR!
 	}
