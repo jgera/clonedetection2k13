@@ -1,10 +1,13 @@
+import java.util.ArrayList;
+
 
 public class Node extends Thread{
 	private int id;
 	private Coordinate coord; //coordinate of the node in the Unite-Square Area
-	private Float radius,prob;
+	private Float radius, prob;
 	private int locations;
 	private int energy, en_send, en_rec, en_sign;
+	private ArrayList<Node> neigh = new ArrayList<Node>();
 	
 	public Node(int cont_id, Coordinate coo_in, Float r, Float p, Integer g, Integer e,
 			Integer e_send, Integer e_rec, Integer e_sign) {
@@ -25,6 +28,11 @@ public class Node extends Thread{
 	
 	public Coordinate getCoord(){
 		return coord;
+	}
+	
+	public void insertNeigh(Node n){
+		neigh.add(n);
+		System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
 	}
 
 }

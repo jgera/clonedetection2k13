@@ -3,13 +3,13 @@ import java.util.ArrayList;
 
 public class Hypervisor {
 	private String host_rmi, protocol;
-	private Integer n,g,e,e_send,e_rec,e_sign;
+	private Integer n,g,e,e_send,e_rec,e_sign,nsim;
 	private Float p,r;
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 
 	public Hypervisor(String host, String prot, Integer g_in,
 			Integer n_in, Integer e_in, Integer e_s, Integer e_r,
-			Integer e_signat, Float p_in, Float r_in) {	//constructor from Simulation, data from ProjGUI -> Simulation
+			Integer e_signat, Float p_in, Float r_in, Integer n_sim) {	//constructor from Simulation, data from ProjGUI -> Simulation
 		host_rmi=host;	//host for the RMI server
 		protocol=prot;	//protocol used for the simulation (LSM or RED)
 		g=g_in;			//number of destination location
@@ -20,6 +20,8 @@ public class Hypervisor {
 		e_sign= e_signat;	//Energy for the signature of a message
 		p=p_in;			//Probability for a neighbor node to process a location claim
 		r=r_in;			//Communication radius of a node
+		
+		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
 	
 	public Node getNode(int id){
@@ -40,10 +42,26 @@ public class Hypervisor {
 			if(!found){
 				Node node= new Node(cont_id,coor, r,p,g,e,e_send,e_rec,e_sign);
 				nodes.add(node);
+				//build the neighborhood for this node
+				for(int j=0; j<cont_id; j++){
+					Node fromJ= getNode(j);
+					if(node.getCoord().hasNeighbor(fromJ.getCoord(), r)){	//if a node is in the new node radius
+						node.insertNeigh(fromJ);	//add this node to the list of the new node neighbors
+						fromJ.insertNeigh(node);	//add the new node to the list of this node neighbors
+					}
+				}
+				System.out.println("Nodo aggiunto" + cont_id);
 				}
 			else
 				cont_id--;
 		}
+	}
+	
+	public void attack(){
+		if(protocol=="LSM");
+			//starting the LSM clone detection attack
+		else ;
+			//start the RED clone detection attack
 	}
 
 }
