@@ -82,7 +82,7 @@ public class ProjGUI implements ActionListener{
 			System.out.println("Fine simulazione");
 			resultarea.append("\n"+pressed);
 			//stop the simulation
-			simulation.interrupt();
+			simulation.setStop(true);
 		}
 	}
 

@@ -29,6 +29,7 @@ public class Hypervisor {
 	}
 
 	public void init_usa() {
+		nodes.clear();	//clear the arraylist "nodes" before we start
 		int cont_id;
 		for(cont_id=0;cont_id<n; cont_id++){	//cont_id is for the ID of a node (from 0 to n-1)
 			Double x= Math.random();
