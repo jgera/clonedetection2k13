@@ -31,8 +31,10 @@ public class Node extends Thread{
 	}
 	
 	public void insertNeigh(Node n){
-		neigh.add(n);
-		System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
+		if(!neigh.contains(n)){
+			neigh.add(n);
+			System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
+		}
 	}
 
 }
