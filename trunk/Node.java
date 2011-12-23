@@ -62,15 +62,23 @@ public class Node extends Thread{
 	public void setCoordinate(Coordinate cor){
 		coord=cor;
 	}
-	public void locationClaimNeigh(ArrayList<Node> n){
-		for(int i=0; i<n.size();i++ ){
-		   //chiamo locationclaim per tutti i neighbor
+	public void locationClaimNeigh(){
+		for(int i=0; i<neigh.size();i++ ){
+			neigh.get(i).locationClaim(this, id, coord);//chiamo locationclaim per tutti i neighbor
+			//Energy spent
+			energy=energy-en_send;
 		}
 	}
 	public void locationClaim(Node n,int idclaim,Coordinate c){
-		if(false) //devo controllare se esiste già questo nodo nella mappa??
-		m.put(idclaim,c);
-		
+		//mettere controllo se ignorare o meno
+		energy=energy-en_rec;
+		if(m.containsKey(idclaim)) //devo controllare se esiste già questo nodo nella mappa??
+			if(m.get(idclaim).equals(c)) //controllo se il nodo che ho in memoria ha la stessa coordinata del precedente claim
+			{} //do nothing already present in map
+			else
+			{} // coordinate di stesso id non corrispondo _ ho trovato il clone?
+		else
+			m.put(idclaim,c);
 	}
 	public void run(){
 		//fatto//solo per red hypervisord dovrebbe generare un int randomico e renderlo noto a tutti i nodi
