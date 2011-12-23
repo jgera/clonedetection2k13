@@ -1,6 +1,9 @@
 import java.rmi.ConnectException;
 import java.rmi.Naming;
+import java.util.Random;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 
 public class Hypervisor {
@@ -44,6 +47,7 @@ public class Hypervisor {
 			}
 			if(!found){
 				Node node= new Node(cont_id,coor, r,p,g,e,e_send,e_rec,e_sign);
+				node.setProtocol(protocol);
 				nodes.add(node);
 				//build the neighborhood for this node
 				for(int j=0; j<cont_id; j++){
@@ -92,10 +96,17 @@ public class Hypervisor {
 			}
 		}
 		//let's start the attack!!
-		if(protocol=="LSM");
+		if(protocol=="LSM"){
 			//starting the LSM clone detection attack
-		else ;
+		}
+		else{
+		    Random generator = new Random();
+		    int r=generator.nextInt(); //generation of randomic int for RED protocol
+			for(int i=0; i<nodes.size();i++ ){
+			    getNode(i).setRand(r);
+			}
 			//start the RED clone detection attack
+		}
 		return connect_RMI();
 	}
 	
