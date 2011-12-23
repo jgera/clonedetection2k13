@@ -61,6 +61,37 @@ public class Hypervisor {
 	}
 	
 	public String attack(){
+		System.out.println("CREAZIONE CLONE");
+		int clone_id=(int) ((Math.random())*100);
+		System.out.println("Numero random 0-99 è "+clone_id);
+		//create the clone
+		Node clone= new Node();
+		clone.clone(nodes.get(clone_id));
+		boolean existCoord=false;
+		while(!existCoord){
+			System.out.println("provo coordinata");
+			Double x= Math.random();
+			Double y= Math.random();
+			Coordinate coor= new Coordinate(x,y);
+			boolean found=false;
+			for(int i=0; i<nodes.size() & !found;i++){
+				if(getNode(i).getCoord().equals(coor))	//if the coordinates of one of the nodes in the ArrayList is equals to the actual coordinates
+					found=true;
+			}
+			if(!found){	//we can set this coordinates as new node's coordinates
+				clone.setCoordinate(coor);
+				existCoord=true;}
+			//else we have to change coordinates
+		}
+		//let's assign neighbors to the clone node
+		for(int j=0; j<nodes.size(); j++){
+			Node fromJ= getNode(j);
+			if(clone.getCoord().hasNeighbor(fromJ.getCoord(), r)){	//if a node is in the clone radius
+				clone.insertNeigh(fromJ);	//add this node to the list of the new node neighbors
+				fromJ.insertNeigh(clone);	//add the new node to the list of this node neighbors
+			}
+		}
+		//let's start the attack!!
 		if(protocol=="LSM");
 			//starting the LSM clone detection attack
 		else ;

@@ -9,6 +9,8 @@ public class Node extends Thread{
 	private int energy, en_send, en_rec, en_sign;
 	private ArrayList<Node> neigh = new ArrayList<Node>();
 	
+	public Node(){}
+	
 	public Node(int cont_id, Coordinate coo_in, Float r, Float p, Integer g, Integer e,
 			Integer e_send, Integer e_rec, Integer e_sign) {
 		id= cont_id;		//the ID for the node
@@ -31,10 +33,23 @@ public class Node extends Thread{
 	}
 	
 	public void insertNeigh(Node n){
-		if(!neigh.contains(n)){
-			neigh.add(n);
-			System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
-		}
+		neigh.add(n);
+		System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
+	}
+	
+	public void clone(Node fromClone){
+		id= fromClone.id;
+		radius= fromClone.radius;
+		prob= fromClone.prob;
+		locations= fromClone.locations;
+		energy= fromClone.energy;
+		en_send= fromClone.en_send;
+		en_rec= fromClone.en_rec;
+		en_sign= fromClone.en_sign;
+	}
+	
+	public void setCoordinate(Coordinate cor){
+		coord=cor;
 	}
 
 }
