@@ -1,3 +1,5 @@
+import java.rmi.ConnectException;
+import java.rmi.Naming;
 import java.util.ArrayList;
 
 
@@ -58,11 +60,27 @@ public class Hypervisor {
 		}
 	}
 	
-	public void attack(){
+	public String attack(){
 		if(protocol=="LSM");
 			//starting the LSM clone detection attack
 		else ;
 			//start the RED clone detection attack
+		return connect_RMI();
+	}
+	
+	@SuppressWarnings("finally")
+	public String connect_RMI(){
+		String echo="ERROR";
+		try{
+			txtPrint ref= (txtPrint) Naming.lookup("rmi://"+host_rmi+"/print");
+			echo=protocol+ " "+ nsim + " "+ n + " "+ r+ " "+ p+ " "+g+" "+e+" "+e_send+" "+e_rec+" "+e_sign+"\n";
+			ref.print_on_txt(echo);
+		}
+		catch(ConnectException e) {System.out.println("Problems with the Server Connection! Please try again later.");}
+		catch(Exception exc) {exc.printStackTrace();}
+		finally{
+			return echo;
+		}
 	}
 
 }

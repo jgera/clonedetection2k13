@@ -19,7 +19,7 @@ public class Simulation extends Thread{
 	private String proto;
 	private Integer nsim,g,n,e,e_send,e_receive,e_sign;
 	private Float p,r;
-	private static int cont_sim;
+	private static int cont_sim; 	//counter of the simulations
 	private boolean stop=false;
 
 	public Simulation(String conf_file, String host, ProjGUI par){
@@ -125,7 +125,6 @@ public class Simulation extends Thread{
 			String testproto= strtok.nextToken();
 			if(testproto.startsWith("LSM") || testproto.startsWith("RED")){
 				proto= testproto;
-				parent.getResultArea().append("\nPROTO="+proto+"\n");
 				return;
 			}
 			else throw new IllegalValueException("proto");
@@ -137,43 +136,36 @@ public class Simulation extends Thread{
 			if(x>0){
 				if(next.equals("NSIM")){	
 					nsim=x;
-					parent.getResultArea().append("NSIM="+nsim+"\n");
 					return;
 				}
 				
 				if(next.equals("g")){
 					g=x;
-					parent.getResultArea().append("g="+g+"\n");
 					return;
 				}
 				
 				if(next.equals("n")){
 					n=x;
-					parent.getResultArea().append("n="+n+"\n");
 					return;
 				}
 				
 				if(next.equals("E")){
 					e=x;
-					parent.getResultArea().append("E="+e+"\n");
 					return;
 				}
 				
 				if(next.equals("E_send")){
 					e_send=x;
-					parent.getResultArea().append("E_send="+e_send+"\n");
 					return;
 				}
 				
 				if(next.equals("E_receive")){
 					e_receive=x;
-					parent.getResultArea().append("E_receive="+e_receive+"\n");
 					return;
 				}
 				
 				if(next.equals("E_signature")){
 					e_sign=x;
-					parent.getResultArea().append("E_signature="+e_sign+"\n");
 					return;
 				}
 			}
@@ -187,7 +179,6 @@ public class Simulation extends Thread{
 			if(next.equals("p")){	
 			    if(x>0.0 && x<1.0){
 					p=x;
-					parent.getResultArea().append("p="+p+"\n");
 					return;
 				}
 			    else throw new IllegalValueException("p");
@@ -195,7 +186,6 @@ public class Simulation extends Thread{
 			if(next.equals("r")){
 				if(x>0.0){
 					r=x;
-					parent.getResultArea().append("r="+r+"\n");
 					return;
 				}
 				else throw new IllegalValueException("r");
@@ -252,9 +242,9 @@ public class Simulation extends Thread{
 				System.out.println(cont_sim);
 				hyp.init_usa(); //initialization of the unite-square area
 				//Attacco clone!
-				//hyp.attack();
+				String result=hyp.attack();
 				cont_sim++;
+				parent.getResultArea().append(result);
 		}
-		//paragraph 3, SIMULATOR!
 	}
 }
