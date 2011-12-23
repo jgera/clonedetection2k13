@@ -28,4 +28,10 @@ public class Coordinate {
     		return true;
     	else return false;
     }
+    
+    public Double distance(Coordinate dest){	//distance between two points
+    	Double diff_x= x-dest.getX();
+    	Double diff_y= y-dest.getY();
+    	return Math.sqrt((diff_x*diff_x)+(diff_y*diff_y));
+    }
 }
