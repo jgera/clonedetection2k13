@@ -97,7 +97,7 @@ public class Hypervisor {
 		}
 		//let's start the attack!!
 		if(protocol=="LSM"){
-			//starting the LSM clone detection attack
+			Node.setProtocol("LSM");
 		}
 		else{
 		    Random generator = new Random();
@@ -105,7 +105,10 @@ public class Hypervisor {
 			for(int i=0; i<nodes.size();i++ ){
 			    getNode(i).setRand(r);
 			}
-			//start the RED clone detection attack
+			Node.setProtocol("RED");
+		}
+		for(int i=0;i<nodes.size();i++){
+			getNode(i).start();
 		}
 		return connect_RMI();
 	}
