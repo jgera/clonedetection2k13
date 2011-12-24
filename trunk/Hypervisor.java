@@ -16,15 +16,19 @@ public class Hypervisor {
 			Integer n_in, Integer e_in, Integer e_s, Integer e_r,
 			Integer e_signat, Float p_in, Float r_in, Integer n_sim) {	//constructor from Simulation, data from ProjGUI -> Simulation
 		host_rmi=host;	//host for the RMI server
-		protocol=prot;	//protocol used for the simulation (LSM or RED)
+		//protocol=prot;	//protocol used for the simulation (LSM or RED)
+		protocol= "LSM";	//TESTING
 		g=g_in;			//number of destination location
 		n=n_in;			//number of nodes in the network
+		//n=5; 		//TESTING
 		e=e_in;			//Total energy for each nodes
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
 		p=p_in;			//Probability for a neighbor node to process a location claim
+		//p=(float) 0.5;
 		r=r_in;			//Communication radius of a node
+		//r=(float) 0.5;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -35,6 +39,7 @@ public class Hypervisor {
 
 	public void init_usa() {
 		nodes.clear();	//clear the arraylist "nodes" before we start
+		Node.setProtocol(protocol);
 		int cont_id;
 		for(cont_id=0;cont_id<n; cont_id++){	//cont_id is for the ID of a node (from 0 to n-1)
 			Double x= Math.random();
@@ -46,8 +51,7 @@ public class Hypervisor {
 					found=true;
 			}
 			if(!found){
-				Node node= new Node(cont_id,coor, r,p,g,e,e_send,e_rec,e_sign);
-				node.setProtocol(protocol);
+				Node node= new Node(cont_id,coor, r,p,g,e,e_send,e_rec,e_sign,this);
 				nodes.add(node);
 				//build the neighborhood for this node
 				for(int j=0; j<cont_id; j++){
@@ -84,7 +88,8 @@ public class Hypervisor {
 			}
 			if(!found){	//we can set this coordinates as new node's coordinates
 				clone.setCoordinate(coor);
-				existCoord=true;}
+				existCoord=true;
+			}
 			//else we have to change coordinates
 		}
 		//let's assign neighbors to the clone node
@@ -95,6 +100,8 @@ public class Hypervisor {
 				fromJ.insertNeigh(clone);	//add the new node to the list of this node neighbors
 			}
 		}
+		nodes.add(clone);
+		
 		//let's start the attack!!
 		if(protocol=="LSM"){
 			Node.setProtocol("LSM");
@@ -107,10 +114,30 @@ public class Hypervisor {
 			}
 			Node.setProtocol("RED");
 		}
+		
 		for(int i=0;i<nodes.size();i++){
 			getNode(i).start();
 		}
+		
+		while(!Node.getFoundClone() && !allAlive()){	//aggiungere controllo anche sul fatto che i thread sian tutti attivi
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return connect_RMI();
+	}
+	
+	public boolean allAlive(){
+		for(int i=0; i<nodes.size();i++){
+			if(!nodes.get(i).isAlive()){
+				this.notify();
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@SuppressWarnings("finally")
@@ -126,6 +153,10 @@ public class Hypervisor {
 		finally{
 			return echo;
 		}
+	}
+	
+	public int clonitot(){
+		return Node.cloni;
 	}
 
 }
