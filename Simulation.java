@@ -246,5 +246,6 @@ public class Simulation extends Thread{
 				cont_sim++;
 				parent.getResultArea().append(result);
 		}
+		parent.getResultArea().append("\n"+hyp.clonitot());	//PROVA
 	}
 }
