@@ -2,8 +2,6 @@ import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 
 public class Hypervisor {
@@ -11,6 +9,7 @@ public class Hypervisor {
 	private Integer n,g,e,e_send,e_rec,e_sign,nsim;
 	private Float p,r;
 	private ArrayList<Node> nodes = new ArrayList<Node>();
+	private static boolean allDead;
 
 	public Hypervisor(String host, String prot, Integer g_in,
 			Integer n_in, Integer e_in, Integer e_s, Integer e_r,
@@ -20,15 +19,16 @@ public class Hypervisor {
 		protocol= "LSM";	//TESTING
 		g=g_in;			//number of destination location
 		n=n_in;			//number of nodes in the network
+		//n=10;		//TESTING
 		//n=5; 		//TESTING
 		e=e_in;			//Total energy for each nodes
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
-		p=p_in;			//Probability for a neighbor node to process a location claim
-		//p=(float) 0.5;
-		r=r_in;			//Communication radius of a node
-		//r=(float) 0.5;		//TESTING
+		//p=p_in;			//Probability for a neighbor node to process a location claim
+		p=(float) 0.5;
+		//r=r_in;			//Communication radius of a node
+		r=(float) 0.5;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -36,10 +36,24 @@ public class Hypervisor {
 	public Node getNode(int id){
 		return nodes.get(id);
 	}
+	
+	public void dimAlive(){
+		allDead=true;
+		//Node.setFoundClone(true);
+		System.out.println("All dead!");
+		/*synchronized(this){
+			this.notify();
+		}*/
+	}
 
 	public void init_usa() {
+		System.out.println("ITERAZIONE SUCCESSIVA");
+		//restoring of the static fields for the new iterations
 		nodes.clear();	//clear the arraylist "nodes" before we start
+		allDead=false;
+		Node.setFoundClone(false);
 		Node.setProtocol(protocol);
+		
 		int cont_id;
 		for(cont_id=0;cont_id<n; cont_id++){	//cont_id is for the ID of a node (from 0 to n-1)
 			Double x= Math.random();
@@ -119,25 +133,25 @@ public class Hypervisor {
 			getNode(i).start();
 		}
 		
-		while(!Node.getFoundClone() && !allAlive()){	//aggiungere controllo anche sul fatto che i thread sian tutti attivi
+		NoDeamon nd= new NoDeamon(nodes, this);	//daemon thread to control if every Thread is still alive
+		nd.start();
+		
+		while(!Node.getFoundClone() && !allDead){	//aggiungere controllo anche sul fatto che i thread sian tutti attivi
 			try {
-				this.wait();
+				synchronized(this){
+					System.out.println("HYP IN WAIT");
+					this.wait();
+				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		System.out.println("AVVISATO!");
+		for(int i=0; i<nodes.size();i++)
+			nodes.get(i).interrupt();
+		
 		return connect_RMI();
-	}
-	
-	public boolean allAlive(){
-		for(int i=0; i<nodes.size();i++){
-			if(!nodes.get(i).isAlive()){
-				this.notify();
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	@SuppressWarnings("finally")
@@ -145,7 +159,11 @@ public class Hypervisor {
 		String echo="ERROR";
 		try{
 			txtPrint ref= (txtPrint) Naming.lookup("rmi://"+host_rmi+"/print");
-			echo=protocol+ " "+ nsim + " "+ n + " "+ r+ " "+ p+ " "+g+" "+e+" "+e_send+" "+e_rec+" "+e_sign+"\n";
+			int found=0;
+			if(Node.getFoundClone())
+				found=1;
+				
+			echo=protocol+ " "+ nsim + " "+ n + " "+ r+ " "+ p+ " "+g+" "+e+" "+e_send+" "+e_rec+" "+e_sign+" "+found+"\n";
 			ref.print_on_txt(echo);
 		}
 		catch(ConnectException e) {System.out.println("Problems with the Server Connection! Please try again later.");}
