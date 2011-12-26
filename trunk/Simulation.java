@@ -40,7 +40,7 @@ public class Simulation extends Thread{
 		//host_conf= the website for the socket connection, and
 		//file= the source of the file in the website
 		StringTokenizer strtok = new StringTokenizer(config_file, "/");
-		host_conf= strtok.nextToken();
+		host_conf= "local"+strtok.nextToken(); //DA TOGLIERE LOCAL,PROBLEMA VACANZIERO...SI SPERA! TXT SPOSTATO IN LOCALWWW.ETCETC
 		file+="/";
 		while(strtok.hasMoreTokens()){
 			file+=strtok.nextToken();
@@ -87,6 +87,7 @@ public class Simulation extends Thread{
 		
 		while(!stop){
 			String line = in.readLine();
+			//System.out.println("LOL"+line);
 			if(line.isEmpty() && !firstEmptyLine){
 				//We reached the end of the header
 				firstEmptyLine= true;
@@ -238,7 +239,7 @@ public class Simulation extends Thread{
 		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
 		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r,nsim);
-		while(!stop && cont_sim<1){		//messo 1 per debug, poi sostituire con nsim
+		while(!stop && cont_sim<2){		//messo 1 per debug, poi sostituire con nsim
 				System.out.println(cont_sim);
 				hyp.init_usa(); //initialization of the unite-square area
 				//Attacco clone!

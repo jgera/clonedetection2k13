@@ -52,9 +52,13 @@ public class Node extends Thread{
 		return foundClone;
 	}
 	
+	public static void setFoundClone(boolean fc){
+		foundClone=fc;
+	}
+	
 	public void insertNeigh(Node n){
 		neigh.add(n);
-		System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
+		//System.out.println(this.getNodeId()+ " ha come vicino il nodo "+n.getNodeId());
 	}
 	
 	public void clone(Node fromClone){
@@ -117,7 +121,12 @@ public class Node extends Thread{
 				System.out.println("CLONE" + mess.getID());
 				cloni++;	//test per contare i cloni trovati in 100 cicli
 				foundClone=true;	//static field, flag for the hypervisor
-				parent.notify();
+				synchronized(parent){
+					parent.notify();
+				}
+				synchronized(messages){
+					messages.notifyAll();
+				}
 			}
 			else forward(mess);
 		}
@@ -172,7 +181,13 @@ public class Node extends Thread{
 						System.out.println("CLONE" + message.getID());
 						cloni++;	//test per contare i cloni trovati in 100 cicli
 						foundClone=true;	//static field, flag for the hypervisor
-						parent.notify();
+						synchronized(parent){
+							parent.notify();
+						}
+						synchronized(messages){
+							messages.notifyAll();
+						}
+						
 					}
 				}
 			}
@@ -185,7 +200,6 @@ public class Node extends Thread{
 		//the node send broadcast to its neighbors the locationclaim message
 		for(int i=0;i<neigh.size();i++){
 			neigh.get(i).sendLC(message);
-			//neigh.get(i).receiveLC(message);
 		}
 		LocationClaim mex=null;
 		boolean foundclone=false;
@@ -197,7 +211,9 @@ public class Node extends Thread{
 							messages.wait();
 						} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Interrotto");
+						messages.clear();
+						return;
 						}	
 				}
 				mex= messages.remove(0);
@@ -206,7 +222,6 @@ public class Node extends Thread{
 				else
 					receiveLCForw(mex);
 			}
-			
 		}
 		//if(protocol=="RED");
 		//if(protocol=="LSM");
