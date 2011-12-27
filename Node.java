@@ -84,13 +84,12 @@ public class Node extends Thread{
 	}
 	
 	public void sendLC(LocationClaim mess){
-		if(!foundClone){
 			synchronized(messages){
+				//mess_proceeded++;	//MAH!
 				messages.add(mess);
 				messages.notifyAll();
 				System.out.println("Message sent");
 			}
-		}
 	}
 	
 	public synchronized void receiveLC(LocationClaim mess){	//receive the location claim for the first time
@@ -99,7 +98,7 @@ public class Node extends Thread{
 			if(Math.random()<=(1-prob)){
 				System.out.println("ignore"); //ignore the message
 				mess_proceeded--;
-				}
+			}
 			else{ //forward the message
 				Double x= ((Math.random()*99)/100);
 				Double y= ((Math.random()*99)/100);
@@ -134,9 +133,9 @@ public class Node extends Thread{
 					synchronized(parent){
 						parent.notify();
 					}
-					synchronized(messages){
+					/*synchronized(messages){
 						messages.notifyAll();
-					}
+					}*/
 				}
 				else forward(mess);
 			}
@@ -215,28 +214,30 @@ public class Node extends Thread{
 		//the node send broadcast to its neighbors the locationclaim message
 		for(int i=0;i<neigh.size();i++){
 			neigh.get(i).sendLC(message);
-			mess_proceeded++;
+			//mess_proceeded++;
 		}
+		
 		LocationClaim mex=null;
-		while(!foundClone){
-			synchronized(messages){
-				while(messages.isEmpty()){
-					System.out.println("Empty LOLOLOLOLOLOLOLOLOL?");
-					try {
-							messages.wait();
-						} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						System.out.println("Interrotto");
-						messages.clear();
-						return;
-						}
-				}
+		try {
+			while(!foundClone){
+				synchronized(messages){
+					while(messages.isEmpty()){
+						System.out.println("Empty LOLOLOLOLOLOLOLOLOL?");
+						messages.wait();
+					}
 				mex= messages.remove(0);
+				}
+				
 				if(!mex.toForw())
 					receiveLC(mex);
 				else
 					receiveLCForw(mex);
 			}
+		}catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Interrotto");
+			messages.clear();
+			return;
 		}
 	}
 
