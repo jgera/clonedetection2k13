@@ -88,7 +88,7 @@ public class Node extends Thread{
 				//mess_proceeded++;	//MAH!
 				messages.add(mess);
 				messages.notifyAll();
-				System.out.println("Message sent");
+				//System.out.println("Message sent");
 			}
 	}
 	

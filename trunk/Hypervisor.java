@@ -18,8 +18,8 @@ public class Hypervisor {
 		//protocol=prot;	//protocol used for the simulation (LSM or RED)
 		protocol= "LSM";	//TESTING
 		g=g_in;			//number of destination location
-		//n=n_in;			//number of nodes in the network
-		n=3;		//TESTING
+		n=n_in;			//number of nodes in the network
+		//n=3;		//TESTING
 		//n=5; 		//TESTING
 		e=e_in;			//Total energy for each nodes
 		e_send=e_s;		//Energy spent for sending a message
@@ -85,8 +85,7 @@ public class Hypervisor {
 	
 	public String attack(){
 		System.out.println("CREAZIONE CLONE");
-		//int clone_id=(int) ((Math.random())*100);
-		int clone_id=(int) ((Math.random())*3);
+		int clone_id=(int) ((Math.random())*100);
 		System.out.println("Numero random 0-99 è "+clone_id);
 		//create the clone
 		Node clone= new Node();
