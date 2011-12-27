@@ -18,17 +18,17 @@ public class Hypervisor {
 		//protocol=prot;	//protocol used for the simulation (LSM or RED)
 		protocol= "LSM";	//TESTING
 		g=g_in;			//number of destination location
-		n=n_in;			//number of nodes in the network
-		//n=10;		//TESTING
+		//n=n_in;			//number of nodes in the network
+		n=3;		//TESTING
 		//n=5; 		//TESTING
 		e=e_in;			//Total energy for each nodes
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
 		//p=p_in;			//Probability for a neighbor node to process a location claim
-		p=(float) 0.5;
+		p=(float) 1;
 		//r=r_in;			//Communication radius of a node
-		r=(float) 0.5;		//TESTING
+		r=(float) 0.7;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -53,6 +53,7 @@ public class Hypervisor {
 		allDead=false;
 		Node.setFoundClone(false);
 		Node.setProtocol(protocol);
+		Node.setMessPro(0);
 		
 		int cont_id;
 		for(cont_id=0;cont_id<n; cont_id++){	//cont_id is for the ID of a node (from 0 to n-1)
@@ -84,7 +85,8 @@ public class Hypervisor {
 	
 	public String attack(){
 		System.out.println("CREAZIONE CLONE");
-		int clone_id=(int) ((Math.random())*100);
+		//int clone_id=(int) ((Math.random())*100);
+		int clone_id=(int) ((Math.random())*3);
 		System.out.println("Numero random 0-99 è "+clone_id);
 		//create the clone
 		Node clone= new Node();
@@ -156,10 +158,12 @@ public class Hypervisor {
 	
 	@SuppressWarnings("finally")
 	public String connect_RMI(){
+		System.out.println("connect RMI");
 		String echo="ERROR";
 		try{
 			txtPrint ref= (txtPrint) Naming.lookup("rmi://"+host_rmi+"/print");
 			int found=0;
+			System.out.println(Node.getFoundClone());
 			if(Node.getFoundClone())
 				found=1;
 				

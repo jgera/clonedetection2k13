@@ -13,6 +13,7 @@ public class Node extends Thread{
     private Map<Integer, Coordinate> m = new HashMap<Integer, Coordinate>(); //contains the map of the routed nodes coordinate
 	private static String protocol;
 	private static boolean foundClone=false;
+	private static int mess_proceeded=0;
 	
 	public static int cloni=0;
 	public Node(){}
@@ -53,6 +54,7 @@ public class Node extends Thread{
 	}
 	
 	public static void setFoundClone(boolean fc){
+		System.out.println("foundclone=false");
 		foundClone=fc;
 	}
 	
@@ -82,116 +84,129 @@ public class Node extends Thread{
 	}
 	
 	public void sendLC(LocationClaim mess){
-		//System.out.println(this.getNodeId()+ "send message to" + n.getNodeId());
-		synchronized(messages){
-			messages.add(mess);
-			messages.notify();
+		if(!foundClone){
+			synchronized(messages){
+				messages.add(mess);
+				messages.notifyAll();
+				System.out.println("Message sent");
+			}
 		}
 	}
 	
 	public synchronized void receiveLC(LocationClaim mess){	//receive the location claim for the first time
-		System.out.println(this.getNodeId()+ " receive message of claim location from "+ mess.getID());
-		if(Math.random()<=(1-prob))
-			System.out.println("ignore"); //ignore the message
-		else{ //forward the message
-			Double x= ((Math.random()*99)/100);
-			Double y= ((Math.random()*99)/100);
-			System.out.println(this.getCoord().getX()+ " "+ this.getCoord().getY());
-			System.out.println(x+ " "+ y);
-			Coordinate dest= new Coordinate(x,y);	//destination
-			mess.setDestination(dest);
-			forward(mess);
-		}
+		if(!foundClone){	//if we have found the clone, don't proceed
+			System.out.println(this.getNodeId()+ " receive message of claim location from "+ mess.getID());
+			if(Math.random()<=(1-prob)){
+				System.out.println("ignore"); //ignore the message
+				mess_proceeded--;
+				}
+			else{ //forward the message
+				Double x= ((Math.random()*99)/100);
+				Double y= ((Math.random()*99)/100);
+				System.out.println(this.getCoord().getX()+ " "+ this.getCoord().getY());
+				System.out.println(x+ " "+ y);
+				Coordinate dest= new Coordinate(x,y);	//destination
+				mess.setDestination(dest);
+				forward(mess);
+			}
+		}	
 	}
 	
 	public synchronized void receiveLCForw(LocationClaim mess){	//receive the location claim in order to forwarding it, LSM
-		//aggiungere controllo su energy finita
-		energy-=en_rec;
-		System.out.println(this.getNodeId()+ " receive message forwarded");
-		//inserire conto su locations!! (g)
-		Coordinate test=m.get(mess.getID());
-		if(test!=null){	//already present
-			System.out.println("Già presente");
-			energy-=en_sign;
-			//control if this id is already present
-			//verify: spent energy for signature
-			//controllo energia sufficiente
-			//MODIFICHE QUI PER VERIFICARE SE ESISTE CLONE: NON CONVINTO DEL FUNZIONAMENTO DEL GET SOTTOSTANTE
-			if(!test.equals(mess.getCoord())){	//same id, different coordinates = CLONE!
-				System.out.println("CLONE" + mess.getID());
-				cloni++;	//test per contare i cloni trovati in 100 cicli
-				foundClone=true;	//static field, flag for the hypervisor
-				synchronized(parent){
-					parent.notify();
+		if(!foundClone){	//if we have found the clone, don't proceed
+			//aggiungere controllo su energy finita
+			energy-=en_rec;
+			System.out.println(this.getNodeId()+ " receive message forwarded");
+			//inserire conto su locations!! (g)
+			Coordinate test=m.get(mess.getID());
+			if(test!=null){	//already present
+				System.out.println("Già presente");
+				energy-=en_sign;
+				//control if this id is already present
+				//verify: spent energy for signature
+				//controllo energia sufficiente
+				//MODIFICHE QUI PER VERIFICARE SE ESISTE CLONE: NON CONVINTO DEL FUNZIONAMENTO DEL GET SOTTOSTANTE
+				if(!test.equals(mess.getCoord())){	//same id, different coordinates = CLONE!
+					System.out.println("CLONE" + mess.getID());
+					cloni++;	//test per contare i cloni trovati in 100 cicli
+					foundClone=true;	//static field, flag for the hypervisor
+					System.out.println("foundclone=true");
+					synchronized(parent){
+						parent.notify();
+					}
+					synchronized(messages){
+						messages.notifyAll();
+					}
 				}
-				synchronized(messages){
-					messages.notifyAll();
-				}
+				else forward(mess);
 			}
-			else forward(mess);
-		}
-		else{//not present
-			System.out.println("Nodo "+this.getNodeId()+ "salva in hash "+ mess.getID()+ ", coordinate "+mess.getCoord().getX()+ " "+mess.getCoord().getY());
-			m.put(mess.getID(), mess.getCoord());
-			forward(mess);
+			else{//not present
+				System.out.println("Nodo "+this.getNodeId()+ "salva in hash "+ mess.getID()+ ", coordinate "+mess.getCoord().getX()+ " "+mess.getCoord().getY());
+				m.put(mess.getID(), mess.getCoord());
+				forward(mess);
+			}
 		}
 	}
 	
 	public synchronized void forward(LocationClaim message){
-		//the forwarding is different according to the protocol implemented
-		Coordinate dest= message.getCoord();
-		if(protocol=="LSM"){
-			System.out.println("LSM");
-			Node closer= this;
-			System.out.println("closer before= "+this.getNodeId());
-			Double distance_min= closer.getCoord().distance(dest);
-			for(int i=0;i<neigh.size();i++){
-				Double newdistance=neigh.get(i).getCoord().distance(dest);
-				if(newdistance<distance_min){
-					closer= neigh.get(i);
-					distance_min= newdistance;
+		if(!foundClone){
+			//the forwarding is different according to the protocol implemented
+			Coordinate dest= message.getCoord();
+			if(protocol=="LSM"){
+				System.out.println("LSM");
+				Node closer= this;
+				System.out.println("closer before= "+this.getNodeId());
+				Double distance_min= closer.getCoord().distance(dest);
+				for(int i=0;i<neigh.size();i++){
+					Double newdistance=neigh.get(i).getCoord().distance(dest);
+					if(newdistance<distance_min){
+						closer= neigh.get(i);
+						distance_min= newdistance;
+					}
 				}
-			}
-			System.out.println("closer after= "+closer.getNodeId());
-			
-			if(closer!=this && message.getNumLoc()!=0){ //there is a node closer to the destination and we can still forward
-				message.setForw(true);
-				System.out.println("Forwarding");
-				energy-=en_send;
-				message.setNumLoc(message.getNumLoc()-1);
-				System.out.println(this.getNodeId()+" forward to " +closer.getNodeId());
-				closer.sendLC(message);
-				//aggiungere controllo su energy finita
-				 
-			}
-			if(closer==this){	//this is the closest node to the destination
-				System.out.println("Save here!");
-				if(m.get(message.getID()).equals(message.getCoord())){	//this id+coordinate is already present
-					System.out.println("Già presente");
+				System.out.println("closer after= "+closer.getNodeId());
+				
+				if(closer!=this && message.getNumLoc()!=0){ //there is a node closer to the destination and we can still forward
+					message.setForw(true);
+					System.out.println("Forwarding");
+					energy-=en_send;
+					message.setNumLoc(message.getNumLoc()-1);
+					System.out.println(this.getNodeId()+" forward to " +closer.getNodeId());
+					closer.sendLC(message);
+					//aggiungere controllo su energy finita
 				}
-				else{
-					System.out.println("Nodo "+this.getNodeId()+ "salva in hash "+ message.getID()+ ", coordinate "+message.getCoord().getX()+ " "+message.getCoord().getY());
-					m.put(message.getID(), message.getCoord());
-					//control if this id is already present
-					//verify: spent energy for signature
-					//controllo energia sufficiente
-					//MODIFICHE QUI PER VERIFICARE SE ESISTE CLONE: NON CONVINTO DEL FUNZIONAMENTO DEL GET SOTTOSTANTE
-					energy-=en_sign;
-					if(!m.get(message.getID()).equals(message.getCoord())){	//same id, different coordinates = CLONE!
-						System.out.println("CLONE" + message.getID());
-						cloni++;	//test per contare i cloni trovati in 100 cicli
-						foundClone=true;	//static field, flag for the hypervisor
-						synchronized(parent){
-							parent.notify();
+				if(closer==this){	//this is the closest node to the destination
+					System.out.println("Save here!");
+					if(m.get(message.getID()).equals(message.getCoord())){	//this id+coordinate is already present
+						mess_proceeded--;
+						System.out.println("Già presente");
+					}
+					else{
+						System.out.println("Nodo "+this.getNodeId()+ "salva in hash "+ message.getID()+ ", coordinate "+message.getCoord().getX()+ " "+message.getCoord().getY());
+						m.put(message.getID(), message.getCoord());
+						mess_proceeded--;
+						//control if this id is already present
+						//verify: spent energy for signature
+						//controllo energia sufficiente
+						//MODIFICHE QUI PER VERIFICARE SE ESISTE CLONE: NON CONVINTO DEL FUNZIONAMENTO DEL GET SOTTOSTANTE
+						energy-=en_sign;
+						if(!m.get(message.getID()).equals(message.getCoord())){	//same id, different coordinates = CLONE!
+							System.out.println("CLONE" + message.getID());
+							cloni++;	//test per contare i cloni trovati in 100 cicli
+							foundClone=true;	//static field, flag for the hypervisor
+							System.out.println("foundclone=true");
+							synchronized(parent){
+								parent.notify();
+							}
+							synchronized(messages){
+								messages.notifyAll();
+							}
+							
 						}
-						synchronized(messages){
-							messages.notifyAll();
-						}
-						
 					}
 				}
 			}
-		//if(protocol=="RED"){}	
+			//if(protocol=="RED"){}	
 		}
 	}
 		
@@ -200,10 +215,10 @@ public class Node extends Thread{
 		//the node send broadcast to its neighbors the locationclaim message
 		for(int i=0;i<neigh.size();i++){
 			neigh.get(i).sendLC(message);
+			mess_proceeded++;
 		}
 		LocationClaim mex=null;
-		boolean foundclone=false;
-		while(!foundclone){
+		while(!foundClone){
 			synchronized(messages){
 				while(messages.isEmpty()){
 					System.out.println("Empty LOLOLOLOLOLOLOLOLOL?");
@@ -214,7 +229,7 @@ public class Node extends Thread{
 						System.out.println("Interrotto");
 						messages.clear();
 						return;
-						}	
+						}
 				}
 				mex= messages.remove(0);
 				if(!mex.toForw())
@@ -223,7 +238,13 @@ public class Node extends Thread{
 					receiveLCForw(mex);
 			}
 		}
-		//if(protocol=="RED");
-		//if(protocol=="LSM");
+	}
+
+	public static int getmessagepro(){
+		return mess_proceeded;
+	}
+
+	public static void setMessPro(int i) {
+		mess_proceeded=i;
 	}
 }
