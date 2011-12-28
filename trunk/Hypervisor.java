@@ -15,8 +15,8 @@ public class Hypervisor {
 			Integer n_in, Integer e_in, Integer e_s, Integer e_r,
 			Integer e_signat, Float p_in, Float r_in, Integer n_sim) {	//constructor from Simulation, data from ProjGUI -> Simulation
 		host_rmi=host;	//host for the RMI server
-		//protocol=prot;	//protocol used for the simulation (LSM or RED)
-		protocol= "LSM";	//TESTING
+		protocol=prot;	//protocol used for the simulation (LSM or RED)
+		//protocol= "LSM";	//TESTING
 		g=g_in;			//number of destination location
 		n=n_in;			//number of nodes in the network
 		//n=3;		//TESTING
@@ -25,8 +25,8 @@ public class Hypervisor {
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
-		p=p_in;			//Probability for a neighbor node to process a location claim
-		//p=(float) 1;
+		//p=p_in;			//Probability for a neighbor node to process a location claim
+		p=(float) 1;
 		r=r_in;			//Communication radius of a node
 		//r=(float) 0.3;		//TESTING
 		
