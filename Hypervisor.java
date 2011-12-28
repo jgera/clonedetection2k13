@@ -28,7 +28,7 @@ public class Hypervisor {
 		p=p_in;			//Probability for a neighbor node to process a location claim
 		//p=(float) 1;
 		//r=r_in;			//Communication radius of a node
-		r=(float) 0.4;		//TESTING
+		r=(float) 0.2;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
