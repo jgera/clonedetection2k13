@@ -1,3 +1,5 @@
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class Node extends Thread{
@@ -150,16 +152,36 @@ public class Node extends Thread{
 	
 	public synchronized void forward(LocationClaim message){
 		if(!foundClone){
+			System.out.println(protocol);
 			//the forwarding is different according to the protocol implemented
-			if(protocol=="LSM"){
+			if(protocol.equals("LSM")){
 				Double x= ((Math.random()*99)/100);
 				Double y= ((Math.random()*99)/100);
 				Coordinate dest= new Coordinate(x,y);	//destination: it changes every time we forward a message
 				message.setDestination(dest);
 				forw_lsm(message);
 			}
-			if(protocol=="RED"){
-				//implementare
+			if(protocol.equals("RED")){
+				try {
+					MessageDigest md = MessageDigest.getInstance("MD5");	//hash function implements Java.Security protocol MD5
+					md.reset();
+					md.update((byte)(message.getID()+rand+message.getNumLoc()));	//input: NodeID+randomNumber+g(forwarding iteration)
+					byte[] digest = md.digest();	//calculate
+					String x_s="0.", y_s="0.";
+					for(int i=0;i<(digest.length/2);i++)
+						x_s+=Math.abs(digest[i]);
+					for(int i=(digest.length/2);i<digest.length;i++)
+						y_s+=Math.abs(digest[i]);
+					Double x= Double.parseDouble(x_s);	//x coordinate
+					Double y= Double.parseDouble(y_s);	//y coordinate
+					System.out.println(x+" "+y);
+					Coordinate dest=new Coordinate(x,y);
+					message.setDestination(dest);
+					//forw_red(message)
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}	
 		}
 	}
