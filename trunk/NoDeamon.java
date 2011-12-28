@@ -23,10 +23,13 @@ public class NoDeamon extends Thread{
 			for(int i=0; i<nodes.size();i++){
 				//System.out.println(nodes.get(i)+" "+nodes.get(i).getState());
 				//if(nodes.get(i).getMessages().isEmpty())
-				if(nodes.get(i).getState()==State.BLOCKED || nodes.get(i).getState()==State.WAITING)
-				//if(nodes.get(i).getState()==State.TERMINATED)
-					numDead++;
-			}
+				synchronized(nodes.get(i)){
+					//if(nodes.get(i).getState()==State.BLOCKED || 
+					if(nodes.get(i).getState()==State.WAITING)
+					//if(nodes.get(i).getState()==State.TERMINATED)
+						numDead++;
+					}
+				}
 			if(numDead==nodes.size()){
 				System.out.println("Chiamiamo la merdaccia");
 				stop=true;
