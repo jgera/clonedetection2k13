@@ -27,8 +27,8 @@ public class Hypervisor {
 		e_sign= e_signat;	//Energy for the signature of a message
 		p=p_in;			//Probability for a neighbor node to process a location claim
 		//p=(float) 1;
-		//r=r_in;			//Communication radius of a node
-		r=(float) 0.2;		//TESTING
+		r=r_in;			//Communication radius of a node
+		//r=(float) 1;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -148,13 +148,15 @@ public class Hypervisor {
 				e.printStackTrace();
 			}
 		}
-		if(Node.getFoundClone())
-			nd.setStop(true);
-		
 		System.out.println("AVVISATO!");
-		for(int i=0; i<nodes.size();i++)
-			nodes.get(i).interrupt();
-		
+		if(Node.getFoundClone()){	//if we stopped because of the founding of the clone node,interrupt all the threads
+			//they still finish what they were doing, then they interrupt!
+			nd.setStop(true);
+			for(int i=0; i<nodes.size();i++)
+				synchronized(nodes.get(i)){
+					nodes.get(i).interrupt();
+				}
+		}
 		return connect_RMI();
 	}
 	

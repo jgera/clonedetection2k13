@@ -25,7 +25,7 @@ public class NoDeamon extends Thread{
 				//if(nodes.get(i).getMessages().isEmpty())
 				synchronized(nodes.get(i)){
 					//if(nodes.get(i).getState()==State.BLOCKED || 
-					if(nodes.get(i).getState()==State.WAITING)
+					if(nodes.get(i).getState()==State.WAITING || nodes.get(i).getState()==State.TERMINATED)
 					//if(nodes.get(i).getState()==State.TERMINATED)
 						numDead++;
 					}
