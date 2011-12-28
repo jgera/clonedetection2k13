@@ -239,7 +239,7 @@ public class Simulation extends Thread{
 		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
 		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r,nsim);
-		while(!stop && cont_sim<2){		//messo 1 per debug, poi sostituire con nsim
+		while(!stop && cont_sim<nsim){		//messo 1 per debug, poi sostituire con nsim
 				System.out.println(cont_sim);
 				hyp.init_usa(); //initialization of the unite-square area
 				//Attacco clone!
@@ -247,6 +247,7 @@ public class Simulation extends Thread{
 				cont_sim++;
 				parent.getResultArea().append(result);
 		}
+		parent.setBStop(false);
 		parent.getResultArea().append("\n"+hyp.clonitot());	//PROVA
 	}
 }
