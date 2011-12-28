@@ -21,20 +21,15 @@ public class NoDeamon extends Thread{
 		while(!stop){
 			int numDead=0;
 			for(int i=0; i<nodes.size();i++){
-				//System.out.println(nodes.get(i)+" "+nodes.get(i).getState());
-				//if(nodes.get(i).getMessages().isEmpty())
-				synchronized(nodes.get(i)){
-					//if(nodes.get(i).getState()==State.BLOCKED || 
+				synchronized(nodes.get(i)){ 
 					if(nodes.get(i).getState()==State.WAITING || nodes.get(i).getState()==State.TERMINATED)
-					//if(nodes.get(i).getState()==State.TERMINATED)
 						numDead++;
 					}
 				}
 			if(numDead==nodes.size()){
-				System.out.println("Chiamiamo la merdaccia");
 				stop=true;
 				parent.dimAlive();
-				synchronized(parent){
+				synchronized(parent){ 	//notify to the hypervisor
 					parent.notify();
 				}
 			}
