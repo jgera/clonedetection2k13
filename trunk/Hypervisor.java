@@ -25,10 +25,10 @@ public class Hypervisor {
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
-		//p=p_in;			//Probability for a neighbor node to process a location claim
-		p=(float) 1;
-		//r=r_in;			//Communication radius of a node
-		r=(float) 0.7;		//TESTING
+		p=p_in;			//Probability for a neighbor node to process a location claim
+		//p=(float) 1;
+		r=r_in;			//Communication radius of a node
+		//r=(float) 1;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -53,7 +53,7 @@ public class Hypervisor {
 		allDead=false;
 		Node.setFoundClone(false);
 		Node.setProtocol(protocol);
-		Node.setMessPro(0);
+		//Node.setMessPro(0);
 		
 		int cont_id;
 		for(cont_id=0;cont_id<n; cont_id++){	//cont_id is for the ID of a node (from 0 to n-1)
@@ -134,8 +134,8 @@ public class Hypervisor {
 			getNode(i).start();
 		}
 		
-		NoDeamon nd= new NoDeamon(nodes, this);	//daemon thread to control if every Thread is still alive
-		nd.start();
+		/*NoDeamon nd= new NoDeamon(nodes, this);	//daemon thread to control if every Thread is still alive
+		nd.start();*/
 		
 		while(!Node.getFoundClone() && !allDead){	//aggiungere controllo anche sul fatto che i thread sian tutti attivi
 			try {
@@ -152,26 +152,148 @@ public class Hypervisor {
 		for(int i=0; i<nodes.size();i++)
 			nodes.get(i).interrupt();
 		
+		//nd.interrupt();
 		return connect_RMI();
 	}
 	
 	@SuppressWarnings("finally")
 	public String connect_RMI(){
 		System.out.println("connect RMI");
-		String echo="ERROR";
+		String echo="ERROR\n";
 		try{
 			txtPrint ref= (txtPrint) Naming.lookup("rmi://"+host_rmi+"/print");
 			int found=0;
 			System.out.println(Node.getFoundClone());
 			if(Node.getFoundClone())
 				found=1;
-				
-			echo=protocol+ " "+ nsim + " "+ n + " "+ r+ " "+ p+ " "+g+" "+e+" "+e_send+" "+e_rec+" "+e_sign+" "+found+"\n";
+			
+			//standard deviation= sqrt((E(xi)^2) -1/n * (Exi)^2)/(n-1)
+			// = sqrt(a_mod*b)/(n-1);
+			// = sqrt((a-1/n)*b)/(n-1)
+			
+			//min, max, average, standard deviation of sent messages (s)
+			int min_s=nodes.get(0).getSent();
+			int max_s= min_s;
+			int sum_s= max_s;	//sum of the xi
+			int sum_sq= max_s*max_s;	//sum of the xi^2
+			for(int i=1; i<nodes.size();i++){
+				int calc= nodes.get(i).getSent();
+				if(calc<min_s)
+					min_s=calc;
+				else
+					if(calc>max_s)
+						max_s=calc;
+				sum_s+=calc;
+				sum_sq+=(calc*calc);
+			}
+			double avr_s= sum_s/(nodes.size());
+			double a_s= Math.pow(sum_sq, 2);
+			double b_s= Math.pow(sum_s, 2);
+			double a_mods= a_s-(1/(nodes.size()));
+			double sqrt_s= Math.sqrt(a_mods*b_s);
+			double stand_devs= sqrt_s/(nodes.size()-1);
+			
+			//min, max, average, standard deviation of received messages (r)
+			int min_r=nodes.get(0).getRec();
+			int max_r= min_r;
+			int sum_r= max_r;	//sum of the xi
+			int sum_rq= max_r*max_r;	//sum of the xi^2
+			for(int i=1; i<nodes.size();i++){
+				int calc= nodes.get(i).getRec();
+				if(calc<min_r)
+					min_r=calc;
+				else
+					if(calc>max_r)
+						max_r=calc;
+				sum_r+=calc;
+				sum_rq+=(calc*calc);
+			}
+			double avr_r= sum_r/(nodes.size());
+			double a_r= Math.pow(sum_rq, 2);
+			double b_r= Math.pow(sum_r, 2);
+			double a_modr= a_r-(1/(nodes.size()));
+			double sqrt_r= Math.sqrt(a_modr*b_r);
+			double stand_devr= sqrt_r/(nodes.size()-1);
+			
+			//min, max, average, standard deviation of verified messages (v)
+			int min_v=nodes.get(0).getSign();
+			int max_v= min_v;
+			int sum_v= max_v;	//sum of the xi
+			int sum_vq= max_v*max_v;	//sum of the xi^2
+			for(int i=1; i<nodes.size();i++){
+				int calc= nodes.get(i).getSign();
+				if(calc<min_v)
+					min_v=calc;
+				else
+					if(calc>max_v)
+						max_v=calc;
+				sum_v+=calc;
+				sum_vq+=(calc*calc);
+			}
+			double avr_v= sum_v/(nodes.size());
+			double a_v= Math.pow(sum_vq, 2);
+			double b_v= Math.pow(sum_v, 2);
+			double a_modv= a_v-(1/(nodes.size()));
+			double sqrt_v= Math.sqrt(a_modv*b_v);
+			double stand_devv= sqrt_v/(nodes.size()-1);
+			
+			//min, max, average, standard deviation of consumed energy (e)
+			int min_e=e-nodes.get(0).final_energy();	//energy tot- final energy
+			int max_e= min_e;
+			int sum_e= max_e;	//sum of the xi
+			int sum_eq= max_e*max_e;	//sum of the xi^2
+			for(int i=1; i<nodes.size();i++){
+				int calc= e-nodes.get(i).final_energy();
+				if(calc<min_e)
+					min_e=calc;
+				else
+					if(calc>max_e)
+						max_e=calc;
+				sum_e+=calc;
+				sum_eq+=(calc*calc);
+			}
+			double avr_e= sum_e/(nodes.size());
+			double a_e= Math.pow(sum_eq, 2);
+			double b_e= Math.pow(sum_e, 2);
+			double a_mode= a_e-(1/(nodes.size()));
+			double sqrt_e= Math.sqrt(a_mode*b_e);
+			double stand_deve= sqrt_e/(nodes.size()-1);
+			
+			//min, max, average, standard deviation of memorized messages (m)
+			int min_m=nodes.get(0).getM().size();
+			int max_m= min_m;
+			int sum_m= max_m;	//sum of the xi
+			int sum_mq= max_m*max_m;	//sum of the xi^2
+			for(int i=1; i<nodes.size();i++){
+				int calc= nodes.get(i).getM().size();
+				if(calc<min_m)
+					min_m=calc;
+				else
+					if(calc>max_m)
+						max_m=calc;
+				sum_m+=calc;
+				sum_mq+=(calc*calc);
+			}
+			double avr_m= sum_m/(nodes.size());
+			double a_m= Math.pow(sum_mq, 2);
+			double b_m= Math.pow(sum_m, 2);
+			double a_modm= a_m-(1/(nodes.size()));
+			double sqrt_m= Math.sqrt(a_modm*b_m);
+			double stand_devm= sqrt_m/(nodes.size()-1);
+			
+			echo=protocol+ " "+ nsim + " "+ n + " "+ r+ " "+ p+ " "+g+" "+e+" "+e_send+" "+e_rec+" "+e_sign;
+			echo+=" "+min_s+" "+max_s+" "+avr_s+" "+stand_devs;	//sent messages
+			echo+=" "+min_r+" "+max_r+" "+avr_r+" "+stand_devr;	//received messages
+			echo+=" "+min_v+" "+max_v+" "+avr_v+" "+stand_devv;	//verified messages
+			echo+=" "+min_e+" "+max_e+" "+avr_e+" "+stand_deve;	//spent energy
+			echo+=" "+min_m+" "+max_m+" "+avr_m+" "+stand_devm;	//message memorized
+			echo+=" "+found+"\n";
 			ref.print_on_txt(echo);
 		}
 		catch(ConnectException e) {System.out.println("Problems with the Server Connection! Please try again later.");}
 		catch(Exception exc) {exc.printStackTrace();}
 		finally{
+			System.out.println("FINE CONNECT");
 			return echo;
 		}
 	}

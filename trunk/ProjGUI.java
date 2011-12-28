@@ -19,7 +19,9 @@ public class ProjGUI implements ActionListener{
 		//create a scrollbar for the text area
 		resultarea.setLineWrap(true);
 		scrollta = new JScrollPane(resultarea);
-		scrollta.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollta.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		//scrollta.setWheelScrollingEnabled(handleWheel);
+		//scrollta.setAutoscrolls(true);
 		//the external jframe (BorderLayout) contains some jpanels (GridLayout or FlowLayout)
 		//first jpanel: for the configuration file URL (label+textfield)
 		JPanel conf= new JPanel();
@@ -82,6 +84,10 @@ public class ProjGUI implements ActionListener{
 			//stop the simulation
 			simulation.setStop(true);
 		}
+	}
+	
+	public void setBStop(boolean f){
+		stop.setEnabled(f);
 	}
 
 	public static void main(String[] args){
