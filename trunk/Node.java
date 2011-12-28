@@ -13,7 +13,6 @@ public class Node extends Thread{
     private Map<Integer, Coordinate> m = new HashMap<Integer, Coordinate>(); //contains the map of the routed nodes coordinate
 	private static String protocol;
 	private static boolean foundClone=false;
-	//private static int mess_proceeded=0;
 	private int sent_messages=0;
 	private int received_messages=0;
 	private int sign_done=0;
@@ -108,10 +107,8 @@ public class Node extends Thread{
 	
 	public void sendLC(LocationClaim mess){
 			synchronized(messages){
-				//mess_proceeded++;	//MAH!
 				messages.add(mess);
 				messages.notifyAll();
-				//System.out.println("Message sent");
 			}
 	}
 	
@@ -120,15 +117,8 @@ public class Node extends Thread{
 			System.out.println(this.getNodeId()+ " receive message of claim location from "+ mess.getID());
 			if(Math.random()<=(1-prob)){
 				System.out.println("ignore"); //ignore the message
-				//mess_proceeded--;
 			}
 			else{ //forward the message
-				Double x= ((Math.random()*99)/100);
-				Double y= ((Math.random()*99)/100);
-				System.out.println(this.getCoord().getX()+ " "+ this.getCoord().getY());
-				System.out.println(x+ " "+ y);
-				Coordinate dest= new Coordinate(x,y);	//destination
-				mess.setDestination(dest);
 				forward(mess);
 			}
 		}	
@@ -161,22 +151,27 @@ public class Node extends Thread{
 	public synchronized void forward(LocationClaim message){
 		if(!foundClone){
 			//the forwarding is different according to the protocol implemented
-			Coordinate dest= message.getCoord();
 			if(protocol=="LSM"){
-				forw_lsm(message,dest);
+				Double x= ((Math.random()*99)/100);
+				Double y= ((Math.random()*99)/100);
+				Coordinate dest= new Coordinate(x,y);	//destination: it changes every time we forward a message
+				message.setDestination(dest);
+				forw_lsm(message);
 			}
-			//if(protocol=="RED"){}	
+			if(protocol=="RED"){
+				//implementare
+			}	
 		}
 	}
 	
-	public void forw_lsm(LocationClaim message, Coordinate dest){
+	public void forw_lsm(LocationClaim message){
 		System.out.println("LSM");
 		//find the closest node to the destination
 		Node closer= this;
 		System.out.println("closer before= "+this.getNodeId());
-		Double distance_min= closer.getCoord().distance(dest);
+		Double distance_min= closer.getCoord().distance(message.getCoord());
 		for(int i=0;i<neigh.size();i++){
-			Double newdistance=neigh.get(i).getCoord().distance(dest);
+			Double newdistance=neigh.get(i).getCoord().distance(message.getCoord());
 			if(newdistance<distance_min){
 				closer= neigh.get(i);
 				distance_min= newdistance;

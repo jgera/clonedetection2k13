@@ -28,7 +28,7 @@ public class Hypervisor {
 		p=p_in;			//Probability for a neighbor node to process a location claim
 		//p=(float) 1;
 		r=r_in;			//Communication radius of a node
-		//r=(float) 1;		//TESTING
+		//r=(float) 0.3;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -39,11 +39,7 @@ public class Hypervisor {
 	
 	public void dimAlive(){
 		allDead=true;
-		//Node.setFoundClone(true);
 		System.out.println("All dead!");
-		/*synchronized(this){
-			this.notify();
-		}*/
 	}
 
 	public void init_usa() {
@@ -52,8 +48,6 @@ public class Hypervisor {
 		nodes.clear();	//clear the arraylist "nodes" before we start
 		allDead=false;
 		Node.setFoundClone(false);
-		Node.setProtocol(protocol);
-		//Node.setMessPro(0);
 		
 		int cont_id;
 		for(cont_id=0;cont_id<n; cont_id++){	//cont_id is for the ID of a node (from 0 to n-1)
@@ -118,17 +112,15 @@ public class Hypervisor {
 		nodes.add(clone);
 		
 		//let's start the attack!!
-		if(protocol=="LSM"){
-			Node.setProtocol("LSM");
-		}
-		else{
+		if(protocol=="RED"){
 		    Random generator = new Random();
 		    int r=generator.nextInt(); //generation of randomic int for RED protocol
 			for(int i=0; i<nodes.size();i++ ){
 			    getNode(i).setRand(r);
 			}
-			Node.setProtocol("RED");
 		}
+		
+		Node.setProtocol(protocol);
 		
 		for(int i=0;i<nodes.size();i++){
 			getNode(i).start();
@@ -157,6 +149,7 @@ public class Hypervisor {
 					nodes.get(i).interrupt();
 				}
 		}
+		
 		return connect_RMI();
 	}
 	
@@ -279,7 +272,7 @@ public class Hypervisor {
 	}
 	
 	public double stdDev(int sum, int sum_2){
-		//D = Math.sqrt((sum_2 - sum*sum/n)/(n-1))
+		//SD = Math.sqrt((sum_2 - sum*sum/n)/(n-1))
 		return Math.sqrt((sum_2-(sum*sum/nodes.size()))/(nodes.size()-1));
 		
 	}
