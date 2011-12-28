@@ -27,8 +27,8 @@ public class Hypervisor {
 		e_sign= e_signat;	//Energy for the signature of a message
 		p=p_in;			//Probability for a neighbor node to process a location claim
 		//p=(float) 1;
-		r=r_in;			//Communication radius of a node
-		//r=(float) 1;		//TESTING
+		//r=r_in;			//Communication radius of a node
+		r=(float) 0.4;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -134,8 +134,8 @@ public class Hypervisor {
 			getNode(i).start();
 		}
 		
-		/*NoDeamon nd= new NoDeamon(nodes, this);	//daemon thread to control if every Thread is still alive
-		nd.start();*/
+		NoDeamon nd= new NoDeamon(nodes, this);	//daemon thread to control if every Thread is still alive
+		nd.start();
 		
 		while(!Node.getFoundClone() && !allDead){	//aggiungere controllo anche sul fatto che i thread sian tutti attivi
 			try {
@@ -148,11 +148,13 @@ public class Hypervisor {
 				e.printStackTrace();
 			}
 		}
+		if(Node.getFoundClone())
+			nd.setStop(true);
+		
 		System.out.println("AVVISATO!");
 		for(int i=0; i<nodes.size();i++)
 			nodes.get(i).interrupt();
 		
-		//nd.interrupt();
 		return connect_RMI();
 	}
 	
