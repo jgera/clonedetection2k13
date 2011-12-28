@@ -9,6 +9,8 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import javax.swing.JScrollBar;
+
 public class Simulation extends Thread{
 	private String config_file="www.math.unipd.it/~conti/teaching/PCD1112/project_config.txt";
 	private String host_rmi="localhost";
@@ -239,13 +241,15 @@ public class Simulation extends Thread{
 		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
 		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r,nsim);
-		while(!stop && cont_sim<2){		//messo 1 per debug, poi sostituire con nsim
+		while(!stop && cont_sim<nsim){		//messo 1 per debug, poi sostituire con nsim
 				System.out.println(cont_sim);
 				hyp.init_usa(); //initialization of the unite-square area
 				//Attacco clone!
 				String result=hyp.attack();
 				cont_sim++;
 				parent.getResultArea().append(result);
+				JScrollBar vbar = parent.getBar().getVerticalScrollBar();
+				vbar.setValue(vbar.getMaximum());
 		}
 		parent.setBStop(false);
 		parent.getResultArea().append("\n"+hyp.clonitot());	//PROVA

@@ -20,8 +20,6 @@ public class ProjGUI implements ActionListener{
 		resultarea.setLineWrap(true);
 		scrollta = new JScrollPane(resultarea);
 		scrollta.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		//scrollta.setWheelScrollingEnabled(handleWheel);
-		//scrollta.setAutoscrolls(true);
 		//the external jframe (BorderLayout) contains some jpanels (GridLayout or FlowLayout)
 		//first jpanel: for the configuration file URL (label+textfield)
 		JPanel conf= new JPanel();
@@ -62,6 +60,11 @@ public class ProjGUI implements ActionListener{
 	public JTextArea getResultArea(){
 		return resultarea;
 	}
+	
+	public JScrollPane getBar(){
+		return scrollta;
+	}
+	
 	public void resetInitialState(){
 		start.setEnabled(true);
 		stop.setEnabled(false);

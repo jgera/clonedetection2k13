@@ -150,7 +150,7 @@ public class Hypervisor {
 		}
 		System.out.println("AVVISATO!");
 		if(Node.getFoundClone()){	//if we stopped because of the founding of the clone node,interrupt all the threads
-			//they still finish what they were doing, then they interrupt!
+			//they still finish what they were doing (so it's possible they spent energy for receiving,sending or forwarding a message), then they interrupt!
 			nd.setStop(true);
 			for(int i=0; i<nodes.size();i++)
 				synchronized(nodes.get(i)){
