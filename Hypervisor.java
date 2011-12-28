@@ -169,10 +169,6 @@ public class Hypervisor {
 			if(Node.getFoundClone())
 				found=1;
 			
-			//standard deviation= sqrt((E(xi)^2) -1/n * (Exi)^2)/(n-1)
-			// = sqrt(a_mod*b)/(n-1);
-			// = sqrt((a-1/n)*b)/(n-1)
-			
 			//min, max, average, standard deviation of sent messages (s)
 			int min_s=nodes.get(0).getSent();
 			int max_s= min_s;
@@ -189,11 +185,7 @@ public class Hypervisor {
 				sum_sq+=(calc*calc);
 			}
 			double avr_s= sum_s/(nodes.size());
-			double a_s= Math.pow(sum_sq, 2);
-			double b_s= Math.pow(sum_s, 2);
-			double a_mods= a_s-(1/(nodes.size()));
-			double sqrt_s= Math.sqrt(a_mods*b_s);
-			double stand_devs= sqrt_s/(nodes.size()-1);
+			double stand_devs= stdDev(sum_s,sum_sq);
 			
 			//min, max, average, standard deviation of received messages (r)
 			int min_r=nodes.get(0).getRec();
@@ -211,11 +203,7 @@ public class Hypervisor {
 				sum_rq+=(calc*calc);
 			}
 			double avr_r= sum_r/(nodes.size());
-			double a_r= Math.pow(sum_rq, 2);
-			double b_r= Math.pow(sum_r, 2);
-			double a_modr= a_r-(1/(nodes.size()));
-			double sqrt_r= Math.sqrt(a_modr*b_r);
-			double stand_devr= sqrt_r/(nodes.size()-1);
+			double stand_devr= stdDev(sum_r, sum_rq);
 			
 			//min, max, average, standard deviation of verified messages (v)
 			int min_v=nodes.get(0).getSign();
@@ -233,11 +221,7 @@ public class Hypervisor {
 				sum_vq+=(calc*calc);
 			}
 			double avr_v= sum_v/(nodes.size());
-			double a_v= Math.pow(sum_vq, 2);
-			double b_v= Math.pow(sum_v, 2);
-			double a_modv= a_v-(1/(nodes.size()));
-			double sqrt_v= Math.sqrt(a_modv*b_v);
-			double stand_devv= sqrt_v/(nodes.size()-1);
+			double stand_devv= stdDev(sum_v, sum_vq);
 			
 			//min, max, average, standard deviation of consumed energy (e)
 			int min_e=e-nodes.get(0).final_energy();	//energy tot- final energy
@@ -255,11 +239,7 @@ public class Hypervisor {
 				sum_eq+=(calc*calc);
 			}
 			double avr_e= sum_e/(nodes.size());
-			double a_e= Math.pow(sum_eq, 2);
-			double b_e= Math.pow(sum_e, 2);
-			double a_mode= a_e-(1/(nodes.size()));
-			double sqrt_e= Math.sqrt(a_mode*b_e);
-			double stand_deve= sqrt_e/(nodes.size()-1);
+			double stand_deve= stdDev(sum_e, sum_eq);
 			
 			//min, max, average, standard deviation of memorized messages (m)
 			int min_m=nodes.get(0).getM().size();
@@ -277,11 +257,7 @@ public class Hypervisor {
 				sum_mq+=(calc*calc);
 			}
 			double avr_m= sum_m/(nodes.size());
-			double a_m= Math.pow(sum_mq, 2);
-			double b_m= Math.pow(sum_m, 2);
-			double a_modm= a_m-(1/(nodes.size()));
-			double sqrt_m= Math.sqrt(a_modm*b_m);
-			double stand_devm= sqrt_m/(nodes.size()-1);
+			double stand_devm= stdDev(sum_m, sum_mq);
 			
 			echo=protocol+ " "+ nsim + " "+ n + " "+ r+ " "+ p+ " "+g+" "+e+" "+e_send+" "+e_rec+" "+e_sign;
 			echo+=" "+min_s+" "+max_s+" "+avr_s+" "+stand_devs;	//sent messages
@@ -298,6 +274,12 @@ public class Hypervisor {
 			System.out.println("FINE CONNECT");
 			return echo;
 		}
+	}
+	
+	public double stdDev(int sum, int sum_2){
+		//D = Math.sqrt((sum_2 - sum*sum/n)/(n-1))
+		return Math.sqrt((sum_2-(sum*sum/nodes.size()))/(nodes.size()-1));
+		
 	}
 	
 	public int clonitot(){
