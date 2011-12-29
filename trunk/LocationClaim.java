@@ -1,15 +1,20 @@
 
 public class LocationClaim {
-	private final Integer id;
+	private Integer id;
 	private Coordinate coor;
-	private int locations;
-	private boolean firsttime= false; //if this message has been red at least one time
+	private boolean forw= false; //if this message has been red at least one time
 	private Coordinate destination; //if the message has to be forwarded, this is the destination of it
 
-	public LocationClaim(Integer _id, Coordinate _coor, int _locations){
+	public LocationClaim(Integer _id, Coordinate _coor){
 		id= _id;
 		coor= _coor;
-		locations=_locations;
+	}
+	
+	public LocationClaim() {}
+
+	public void clone(LocationClaim toClone){
+		id= toClone.id;
+		coor= toClone.coor;
 	}
 	
 	public Integer getID(){
@@ -20,23 +25,19 @@ public class LocationClaim {
 		return coor;
 	}
 	
-	public int getNumLoc(){
-		return locations;
+	public Coordinate getDestination(){
+		return destination;
 	}
 	
 	public void setDestination(Coordinate _cor){
 		destination= _cor;
 	}
 	
-	public void setNumLoc(int loc){
-		locations=loc;
+	public void setForw(boolean _forw){
+		forw= _forw;
 	}
 	
-	public void setForw(boolean forw){
-		firsttime= forw;
-	}
-	
-	public boolean toForw(){
-		return firsttime;
+	public boolean getForw(){
+		return forw;
 	}
 }

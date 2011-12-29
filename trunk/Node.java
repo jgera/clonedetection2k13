@@ -126,26 +126,31 @@ public class Node extends Thread{
 		}	
 	}
 	
-	public synchronized void receiveLCForw(LocationClaim mess){	//receive the location claim in order to forwarding it, LSM
+	public synchronized void receiveLCForw(LocationClaim mess){	//receive the location claim in order to forwarding it
 		if(!foundClone){	//if we have found the clone, don't proceed
 			System.out.println(this.getNodeId()+ " receive message forwarded");
-			//inserire conto su locations!! (g)
-			if(energy>=en_sign){	//control if we have enough energy to verify the signature of the message
-				energy-=en_sign;
-				sign_done++;
-				Coordinate test=m.get(mess.getID());
-				if(test!=null){	//message ID already present
-					System.out.println("Già presente");
-					if(!test.equals(mess.getCoord())){	//same id, different coordinates = CLONE!
-						founded_clone();
+			if(protocol.equals("LSM")){	//in LSM, we have to control in every step if the clone is present
+				if(energy>=en_sign){	//control if we have enough energy to verify the signature of the message
+					energy-=en_sign;
+					sign_done++;
+					Coordinate test=m.get(mess.getID());
+					if(test!=null){	//message ID already present
+						System.out.println("Già presente");
+						if(!test.equals(mess.getCoord())){	//same id, different coordinates = CLONE!
+							System.out.println("CLONE!");
+							founded_clone();
+						}
+						else forw(mess);	//forw,non forward!
 					}
-					else forward(mess);
+					else{	//message ID not present
+						System.out.println("Nodo "+this.getNodeId()+ "salva in hash "+ mess.getID()+ ", coordinate "+mess.getCoord().getX()+ " "+mess.getCoord().getY());
+						m.put(mess.getID(), mess.getCoord());
+						forw(mess);	//forw,non forward
+					}
 				}
-				else{	//message ID not present
-					System.out.println("Nodo "+this.getNodeId()+ "salva in hash "+ mess.getID()+ ", coordinate "+mess.getCoord().getX()+ " "+mess.getCoord().getY());
-					m.put(mess.getID(), mess.getCoord());
-					forward(mess);
-				}
+			}
+			if(protocol.equals("RED")){	//in RED, we only have to forward the message
+				forw(mess);
 			}
 		}
 	}
@@ -155,30 +160,43 @@ public class Node extends Thread{
 			System.out.println(protocol);
 			//the forwarding is different according to the protocol implemented
 			if(protocol.equals("LSM")){
-				Double x= ((Math.random()*99)/100);
-				Double y= ((Math.random()*99)/100);
-				Coordinate dest= new Coordinate(x,y);	//destination: it changes every time we forward a message
-				message.setDestination(dest);
-				forw_lsm(message);
+				int i=0;
+				while(i<locations){	//sent #=locations number of messages
+					System.out.println("Location "+i+ "nodo "+id);
+					Double x= ((Math.random()*99)/100);
+					Double y= ((Math.random()*99)/100);
+					Coordinate dest= new Coordinate(x,y);
+					//for every i=location g, clone the original message, changing only the destination coordinates
+					LocationClaim mex_i=new LocationClaim();
+					mex_i.clone(message);
+					mex_i.setDestination(dest);
+					forw(mex_i);
+					i++;
+				}
 			}
 			if(protocol.equals("RED")){
 				try {
 					MessageDigest md = MessageDigest.getInstance("MD5");	//hash function implements Java.Security protocol MD5
-					md.reset();
-					md.update((byte)(message.getID()+rand+message.getNumLoc()));	//input: NodeID+randomNumber+g(forwarding iteration)
-					byte[] digest = md.digest();	//calculate
-					String x_s="0.", y_s="0.";
-					for(int i=0;i<(digest.length/2);i++)
-						x_s+=Math.abs(digest[i]);
-					for(int i=(digest.length/2);i<digest.length;i++)
-						y_s+=Math.abs(digest[i]);
-					Double x= Double.parseDouble(x_s);	//x coordinate
-					Double y= Double.parseDouble(y_s);	//y coordinate
-					System.out.println(x+" "+y);
-					Coordinate dest=new Coordinate(x,y);
-					message.setDestination(dest);
-					//forw_red(message)
-				} catch (NoSuchAlgorithmException e) {
+					for(int i=0;i<locations;i++){	//sent #=locations number of messages
+						md.reset();
+						md.update((byte)(message.getID()+rand+i));	//input: NodeID+randomNumber+g(forwarding iteration)
+						byte[] digest = md.digest();	//calculate
+						String x_s="0.", y_s="0.";
+						for(int ix=0;ix<(digest.length/2);ix++)
+							x_s+=Math.abs(digest[ix]);
+						for(int iy=(digest.length/2);iy<digest.length;iy++)
+							y_s+=Math.abs(digest[iy]);
+						Double x= Double.parseDouble(x_s);	//x coordinate
+						Double y= Double.parseDouble(y_s);	//y coordinate
+						System.out.println(x+" "+y);
+						Coordinate dest=new Coordinate(x,y);
+						//for every i=location g, clone the original message, changing only the destination coordinates
+						LocationClaim mex_i= new LocationClaim();
+						mex_i.clone(message);
+						mex_i.setDestination(dest);
+						forw(mex_i);
+					}
+				}catch (NoSuchAlgorithmException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -186,14 +204,13 @@ public class Node extends Thread{
 		}
 	}
 	
-	public void forw_lsm(LocationClaim message){
-		System.out.println("LSM");
-		//find the closest node to the destination
+	public void forw(LocationClaim message){
+		//find the closer node to the destination
 		Node closer= this;
 		System.out.println("closer before= "+this.getNodeId());
-		Double distance_min= closer.getCoord().distance(message.getCoord());
+		Double distance_min= closer.getCoord().distance(message.getDestination());
 		for(int i=0;i<neigh.size();i++){
-			Double newdistance=neigh.get(i).getCoord().distance(message.getCoord());
+			Double newdistance=neigh.get(i).getCoord().distance(message.getDestination());	//distance node_neighbor[i]-destination coordinates
 			if(newdistance<distance_min){
 				closer= neigh.get(i);
 				distance_min= newdistance;
@@ -201,10 +218,9 @@ public class Node extends Thread{
 		}
 		System.out.println("closer after= "+closer.getNodeId());
 		
-		if(closer!=this && message.getNumLoc()!=0){ //there is a node closer to the destination and we can still forward
-			message.setForw(true);
-			System.out.println("Forwarding");
-			message.setNumLoc(message.getNumLoc()-1);
+		if(closer!=this){ //there is a node closer to the destination
+			if(!message.getForw())	//useless if the message is already forwarded (getForw==true!)
+				message.setForw(true);	
 			if(energy>=en_send){	//control if we have enough energy to send the message
 				System.out.println(this.getNodeId()+" forward to " +closer.getNodeId());
 				energy-=en_send;
@@ -212,9 +228,9 @@ public class Node extends Thread{
 				closer.sendLC(message);
 			}
 		}
-		if(closer==this){	//this is the closest node to the destination
+		else{	//this is the closer node to the destination --> this is the final receiver
 			System.out.println("Save here!");
-			if(energy>=en_send){	//control if we have enough energy to verify the signature of the message
+			if(energy>=en_sign){	//control if we have enough energy to verify the signature of the message
 				energy-=en_sign;
 				sign_done++;
 				Coordinate test=m.get(message.getID());
@@ -246,7 +262,7 @@ public class Node extends Thread{
 	}
 		
 	public void run(){
-		LocationClaim message= new LocationClaim(getNodeId(), getCoord(), locations);	//create a LCMessage with id and coordinates of the node
+		LocationClaim message= new LocationClaim(id, coord);	//create a LCMessage with id and coordinates of the node
 		//the node send broadcast to its neighbors the locationclaim message
 		for(int i=0;i<neigh.size();i++){
 			if(energy>=en_send){	//control if we have enough energy to send the message
@@ -254,7 +270,6 @@ public class Node extends Thread{
 				sent_messages++;
 				neigh.get(i).sendLC(message);
 			}
-			//mess_proceeded++;
 		}
 		
 		LocationClaim mex=null;
@@ -273,8 +288,8 @@ public class Node extends Thread{
 					}
 				}
 				
-				if(mex!=null){
-					if(!mex.toForw())
+				if(mex!=null){	//if we don't have energy to receive, mex=null!
+					if(!mex.getForw())
 						receiveLC(mex);
 					else
 						receiveLCForw(mex);
@@ -283,7 +298,7 @@ public class Node extends Thread{
 		}catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			System.out.println("Interrotto");
-			messages.clear();
+			//messages.clear();
 			return;
 		}
 	}
