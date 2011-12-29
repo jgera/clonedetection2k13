@@ -147,9 +147,8 @@ public class Node extends Thread{
 			//the first forwarding is different according to the protocol implemented
 			if(protocol.equals("LSM")){
 				for(int i=0;i<locations;i++){	//sent #=locations number of messages
-					System.out.println("Location "+i+ "nodo "+id);
-					Double x= ((Math.random()*99)/100);
-					Double y= ((Math.random()*99)/100);
+					Double x= Math.random();
+					Double y= Math.random();
 					Coordinate dest= new Coordinate(x,y);
 					//for every i=location g, clone the original message, changing only the destination coordinates
 					LocationClaim mex_i=new LocationClaim();

@@ -41,7 +41,10 @@ public class Simulation extends Thread{
 		//host_conf= the website for the socket connection, and
 		//file= the source of the file in the website
 		StringTokenizer strtok = new StringTokenizer(config_file, "/");
-		host_conf= "local"+strtok.nextToken(); //DA TOGLIERE LOCAL,PROBLEMA VACANZIERO...SI SPERA! TXT SPOSTATO IN LOCALWWW.ETCETC
+		if(config_file.startsWith("local"))	//there was a problem during the holiday due to a server exchange: it needed the local before the "www" begin
+			host_conf= "local"+strtok.nextToken();
+		else
+			host_conf=strtok.nextToken();
 		file+="/";
 		while(strtok.hasMoreTokens()){
 			file+=strtok.nextToken();
@@ -64,8 +67,8 @@ public class Simulation extends Thread{
 			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		} catch (UnknownHostException i){
 			i.printStackTrace();
-			parent.getResultArea().append("\nImpossibile stabilire connessione con l'host "+config_file);
-			parent.getResultArea().append("\nInserire un link al file di configurazione valido");
+			parent.getResultArea().append("\nUnhable to connect to the host "+config_file);
+			parent.getResultArea().append("\nInsert a valid configuration link file");
 			parent.resetInitialState();
 		}
 		catch(IOException e){
@@ -190,7 +193,7 @@ public class Simulation extends Thread{
 		}
 		
 		else{	//not valid character for "next"
-			throw new IllegalValueException(" per sendGetRequest");
+			throw new IllegalValueException("document returned");
 		}
 	}
 	
@@ -204,9 +207,7 @@ public class Simulation extends Thread{
 			connect();
 		else{
 			//the configuration file link is not a .txt
-			//(gestire il caso in cui il link inserito non sia accettabile
-			System.out.println("link del file di conf inserito non valido");
-			parent.getResultArea().append("Config file link not valid");
+			parent.getResultArea().append("Configuration file link not valid");
 			parent.resetInitialState();
 			return;
 		}
@@ -215,7 +216,7 @@ public class Simulation extends Thread{
 			receiveGetResponse();
 		}catch (IOException e) {
 			e.printStackTrace();
-			parent.getResultArea().append("\nErrore di comunicazione con l'host inserito");
+			parent.getResultArea().append("\nCommunication error with the inserted host");
 			parent.resetInitialState();
 			return;
 		} catch (IllegalValueException i) {
@@ -223,11 +224,11 @@ public class Simulation extends Thread{
 			parent.resetInitialState();
 			return;
 		} catch(NumberFormatException nfe){	//if the parsed string in Tokenize() does not contain a parsable float
-			parent.getResultArea().append("\nFormato di un campo FLOAT non accettabile");
+			parent.getResultArea().append("\nFormat of a FLOAT field not acceptable");
 			parent.resetInitialState();
 			return;
 		} catch(InputMismatchException ime){	//if the parsed int in Tokenize() isn't actually an int!
-			parent.getResultArea().append("\nFormato di un campo INT non accettabile");
+			parent.getResultArea().append("\nFormat of a INT field not acceptable");
 			parent.resetInitialState();
 			return;
 		}
