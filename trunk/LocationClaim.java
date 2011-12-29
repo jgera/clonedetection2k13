@@ -13,6 +13,7 @@ public class LocationClaim {
 	public LocationClaim() {}
 
 	public void clone(LocationClaim toClone){
+		//clone a message
 		id= toClone.id;
 		coor= toClone.coor;
 	}
@@ -29,15 +30,17 @@ public class LocationClaim {
 		return destination;
 	}
 	
+	public boolean getForw(){
+		//if the message is a location claim = 0
+		//if the message is already forwarded at least one time = 1
+		return forw;
+	}
+	
 	public void setDestination(Coordinate _cor){
 		destination= _cor;
 	}
 	
 	public void setForw(boolean _forw){
 		forw= _forw;
-	}
-	
-	public boolean getForw(){
-		return forw;
 	}
 }

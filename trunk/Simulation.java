@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-
 import javax.swing.JScrollBar;
 
 public class Simulation extends Thread{
@@ -51,7 +50,6 @@ public class Simulation extends Thread{
 		}
 		//
 		file=file.trim();
-		System.out.println(file);
 		if(file.endsWith(".txt"))
 			return true;
 		else
@@ -62,7 +60,6 @@ public class Simulation extends Thread{
 	public void connect(){
 		try {
 			Socket socket = new Socket(host_conf,80);
-			System.out.println("Connessione stabilita.");
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		} catch (UnknownHostException i){
@@ -70,12 +67,10 @@ public class Simulation extends Thread{
 			parent.getResultArea().append("\nImpossibile stabilire connessione con l'host "+config_file);
 			parent.getResultArea().append("\nInserire un link al file di configurazione valido");
 			parent.resetInitialState();
-			//System.exit(-1);
 		}
 		catch(IOException e){
 			e.printStackTrace();
 			parent.getResultArea().append("\nErrore in input");
-			//System.exit(-1);
 		}
 	}
 	
@@ -89,7 +84,6 @@ public class Simulation extends Thread{
 		
 		while(!stop){
 			String line = in.readLine();
-			//System.out.println("LOL"+line);
 			if(line.isEmpty() && !firstEmptyLine){
 				//We reached the end of the header
 				firstEmptyLine= true;
@@ -238,20 +232,20 @@ public class Simulation extends Thread{
 			return;
 		}
 		//let's the REAL simulation start...
-		System.out.println("Tutto ok!");
 		//creation of the Hypervisor
 		Hypervisor hyp= new Hypervisor(host_rmi,proto,g,n,e,e_send,e_receive,e_sign,p,r,nsim);
-		while(!stop && cont_sim<nsim){		//messo 1 per debug, poi sostituire con nsim
-				System.out.println(cont_sim);
+		while(!stop && cont_sim<nsim){
 				hyp.init_usa(); //initialization of the unite-square area
-				//Attacco clone!
+				//Clone attack!
 				String result=hyp.attack();
 				cont_sim++;
 				parent.getResultArea().append(result);
+				//set the bar to follow the printing in the textArea
 				JScrollBar vbar = parent.getBar().getVerticalScrollBar();
 				vbar.setValue(vbar.getMaximum());
 		}
+		//if the user pressed the STOP button or all the simulations end : disable the Stop Button
 		parent.setBStop(false);
-		parent.getResultArea().append("\n"+hyp.clonitot());	//PROVA
+		parent.getResultArea().append("\n"+Hypervisor.cloni);	//PROVA
 	}
 }

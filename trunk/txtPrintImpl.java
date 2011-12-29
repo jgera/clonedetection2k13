@@ -13,11 +13,7 @@ public class txtPrintImpl extends UnicastRemoteObject implements txtPrint{
 	}
 	
 	public void print_on_txt(String values){
-		//Sarebbe giusto usare metodo append() perchè così richiede il professore. Ma con append si dovrebbe poi far uso del carattere "\n" che viene
-		//mal interpretato da BloccoNote (se vogliamo aprire .txt in Windows con questo programma,se lo si apre con Oo.Writer è tutto ok!).
-		//Alternativa: println(), che fa gli a capo giusti anche aprendo il file con BloccoNote!
-		//Se si usa println(), comunque, per ogni iterazione bisogna chiamare una sola volta la connessione al ServerRMI!
-		System.out.println("SERVER");
+		System.out.println("RMI Server writing on the .txt output file");
 		write.println(values);
 		write.flush();
 	}
