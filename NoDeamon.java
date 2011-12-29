@@ -11,13 +11,10 @@ public class NoDeamon extends Thread{
 	}
 	
 	public void setStop(boolean b) {
-		// TODO Auto-generated method stub
 		stop=b;
 	}
 	
 	public void run(){
-		System.out.println("DAEMON!");
-		//boolean found=false;
 		while(!stop){
 			int numDead=0;
 			for(int i=0; i<nodes.size();i++){
@@ -27,8 +24,9 @@ public class NoDeamon extends Thread{
 					}
 				}
 			if(numDead==nodes.size()){
+				//if all the nodes are in a waiting or in a terminated state, stop the thread and warn the hypervisor it can stop this simulation step
 				stop=true;
-				parent.dimAlive();
+				parent.allDead();
 				synchronized(parent){ 	//notify to the hypervisor
 					parent.notify();
 				}
