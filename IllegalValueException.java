@@ -8,6 +8,6 @@ public class IllegalValueException extends Exception {
 	}
 	
 	public String getError(){
-		return "Il valore del campo "+name+" non è accettabile per la simulazione";
+		return "The value of the variable \""+name+"\" is not acceptable for the simulation";
 	}
 }

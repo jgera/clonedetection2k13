@@ -134,14 +134,14 @@ public class Hypervisor {
 			}
 		}
 		//Node founded or all Threads are dead
-		if(Node.getFoundClone()){	//if we stopped because of the founding of the clone node,interrupt all the threads
-			//they still finish what they were doing (so it's possible they spend energy for receiving,sending or forwarding a message), then they interrupt!
-			nd.setStop(true);
-			for(int i=0; i<nodes.size();i++)
-				synchronized(nodes.get(i)){
-					nodes.get(i).interrupt();
-				}
-		}
+		//interrupt all the threads!
+		//if we stopped because of the founding of the clone node, they still finish what they were doing 
+		//(so it's possible they spend energy for receiving,sending or forwarding a message), then they interrupt!
+		nd.setStop(true);
+		for(int i=0; i<nodes.size();i++)
+			synchronized(nodes.get(i)){
+				nodes.get(i).interrupt();
+			}
 		
 		return connect_RMI();
 	}
