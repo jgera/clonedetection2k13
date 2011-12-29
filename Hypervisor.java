@@ -25,10 +25,10 @@ public class Hypervisor {
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
-		//p=p_in;			//Probability for a neighbor node to process a location claim
-		p=(float) 1;
+		p=p_in;			//Probability for a neighbor node to process a location claim
+		//p=(float) 1;
 		r=r_in;			//Communication radius of a node
-		//r=(float) 0.3;		//TESTING
+		//r=(float) 0.4;		//TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
