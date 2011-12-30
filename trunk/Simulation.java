@@ -248,6 +248,6 @@ public class Simulation extends Thread{
 		}
 		//if the user pressed the STOP button or all the simulations end : disable the stop button
 		parent.setBStop(false);
-		System.out.println("Clones founded: "+Hypervisor.clones);
+		System.out.println("Clones found: "+Hypervisor.clones);
 	}
 }

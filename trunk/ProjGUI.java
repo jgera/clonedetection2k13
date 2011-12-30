@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class ProjGUI implements ActionListener{
-	private JFrame jf= new JFrame("Clone Detection");
+	private JFrame jf= new JFrame("Clone Detector");
 	private JLabel conf_lab= new JLabel("Insert configuration file URL");
 	private JLabel servrmi_lab= new JLabel ("Insert server RMI URL");
 	private JTextField conf_tf= new JTextField("www.math.unipd.it/~conti/teaching/PCD1112/project_config.txt");

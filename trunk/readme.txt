@@ -43,9 +43,12 @@ to create the stub used by RMI
 
 8. Start the RMI registry: type in the same directory
 	"start rmiregistry"
+if you are using a Windows system, or
+	"rmiregistry &"
+in a Lunix or Unix-like system
 
 9. Start the RMI Server program: type in the same directory
 	"java RMIServer"
 
-10. Come back to the GUI opened at the step 4.,insert the data needed and press the
+10. Go to the GUI opened at the step 4.,insert the data needed and press the
 START button to begin the simulation
