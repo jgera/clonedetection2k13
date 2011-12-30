@@ -109,7 +109,7 @@ public class Node extends Thread{
 		}
 	}
 	
-	public synchronized void receiveLC(LocationClaim mess){	//receive the location claim for the first time
+	public void receiveLC(LocationClaim mess){	//receive the location claim for the first time
 		if(!foundClone)	//if we have found the clone, don't proceed
 			if(Math.random()>(1-prob)) //forward the message
 				forward(mess);	
@@ -143,7 +143,7 @@ public class Node extends Thread{
 		}
 	}
 	
-	public synchronized void forward(LocationClaim message){
+	public void forward(LocationClaim message){
 		//the forward function,as called by the receiving of a message of location claim
 		if(!foundClone){	//if we have found the clone, don't proceed
 			//the first forwarding is different according to the protocol implemented
@@ -187,7 +187,7 @@ public class Node extends Thread{
 		}
 	}
 	
-	public void forw(LocationClaim message){
+	public synchronized void forw(LocationClaim message){
 		if(!foundClone){	//if we have found the clone, don't proceed
 			//the forward function,as called by the receiving of a message already forwarded
 			//or as the ending of the forwarding of a location claim

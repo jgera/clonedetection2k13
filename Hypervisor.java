@@ -22,16 +22,14 @@ public class Hypervisor {
 		//protocol= "LSM";	//TESTING
 		g=g_in;			//number of destination location
 		n=n_in;			//number of nodes in the network
-		//n=3;		//TESTING
-		//n=5; 		//TESTING
 		e=e_in;			//Total energy for each nodes
 		e_send=e_s;		//Energy spent for sending a message
 		e_rec=e_r;		//Energy spent for receiving  a message
 		e_sign= e_signat;	//Energy for the signature of a message
 		p=p_in;			//Probability for a neighbor node to process a location claim
-		//p=(float) 1;
+		//p=(float) 1;		//FOR TESTING
 		r=r_in;			//Communication radius of a node
-		//r=(float) 0.1;		//TESTING
+		//r=(float) 1;		//FOR TESTING
 		
 		nsim= n_sim;    //useful only for the printing on the output txt file!
 	}
@@ -137,7 +135,7 @@ public class Hypervisor {
 		//interrupt all the threads!
 		//if we stopped because of the founding of the clone node, they still finish what they were doing 
 		//(so it's possible they spend energy for receiving,sending or forwarding a message), then they interrupt!
-		nd.setStop(true);
+		nd.setStop(true);	//indispensable if the simulation stopped because of the founding of the clone
 		for(int i=0; i<nodes.size();i++)
 			synchronized(nodes.get(i)){
 				nodes.get(i).interrupt();
