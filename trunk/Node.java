@@ -269,17 +269,18 @@ public class Node extends Thread{
 	public void run(){
 		LocationClaim message= new LocationClaim(id, coord);	//create a LCMessage with id and coordinates of the node
 		//the node send broadcast to its neighbors the locationclaim message
-		for(int i=0;i<neigh.size();i++){
-			if(energy>=en_send && energy>=en_sign){	//control if we have enough energy to send the message
-													//or enough energy to sign it
-				//remove the energy for sending the message and increase the counter of the messages sent from this node
-				energy-=en_send;
-				sent_messages++;
-				//remove the energy for signing the message and increase the counter of the messages signed from this node
-				energy-=en_sign;
-				sign_done++;
-				//send the message
-				neigh.get(i).sendLC(message);
+		if(energy>=en_sign){	//control if we have enough energy to sign the location claim message
+			energy-=en_sign;	//operation to do once for location claim
+			sign_done++;
+			for(int i=0;i<neigh.size();i++){
+				if(energy>=en_sign){	//control if we have enough energy to send the message
+					//remove the energy for sending the message and increase the counter of the messages sent from this node
+					energy-=en_send;
+					sent_messages++;
+					//remove the energy for signing the message and increase the counter of the messages signed from this node
+					//send the message
+					neigh.get(i).sendLC(message);
+				}
 			}
 		}
 		
