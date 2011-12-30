@@ -79,11 +79,8 @@ public class ProjGUI implements ActionListener{
 			simulation= new Simulation(conf_tf.getText(), servrmi_tf.getText(), this);
 			simulation.start();
 		}
-		if(pressed=="Stop"){
-			stop.setEnabled(false);
-			//stop the simulation
+		if(pressed=="Stop")
 			simulation.setStop(true);
-		}
 	}
 	
 	public void setBStop(boolean f){
