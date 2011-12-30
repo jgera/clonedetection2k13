@@ -273,7 +273,7 @@ public class Node extends Thread{
 			energy-=en_sign;	//operation to do once for location claim
 			sign_done++;
 			for(int i=0;i<neigh.size();i++){
-				if(energy>=en_sign){	//control if we have enough energy to send the message
+				if(energy>=en_send){	//control if we have enough energy to send the message
 					//remove the energy for sending the message and increase the counter of the messages sent from this node
 					energy-=en_send;
 					sent_messages++;
