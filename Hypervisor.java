@@ -12,7 +12,7 @@ public class Hypervisor {
 	private ArrayList<Node> nodes = new ArrayList<Node>();
 	private static boolean allDead;
 	
-	public static int cloni=0;	//ULTIMA COSA DA CANCELLARE;UTILE PER DEBUG
+	public static int clones=0;	//counting the clones founded in a simulation
 
 	public Hypervisor(String host, String prot, Integer g_in,
 			Integer n_in, Integer e_in, Integer e_s, Integer e_r,
@@ -154,7 +154,7 @@ public class Hypervisor {
 			int found=0;
 			if(Node.getFoundClone()){
 				found=1;
-				cloni++;	//da togliere
+				clones++;	//da togliere
 			}
 			
 			//sum_x= E(xi)

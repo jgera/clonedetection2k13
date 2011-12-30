@@ -1,3 +1,4 @@
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -224,11 +225,11 @@ public class Simulation extends Thread{
 			parent.resetInitialState();
 			return;
 		} catch(NumberFormatException nfe){	//if the parsed string in Tokenize() does not contain a parsable float
-			parent.getResultArea().append("\nFormat of a FLOAT field not acceptable");
+			parent.getResultArea().append("\nFormat of a FLOAT variable not acceptable");
 			parent.resetInitialState();
 			return;
 		} catch(InputMismatchException ime){	//if the parsed int in Tokenize() isn't actually an int!
-			parent.getResultArea().append("\nFormat of a INT field not acceptable");
+			parent.getResultArea().append("\nFormat of a INT variable not acceptable");
 			parent.resetInitialState();
 			return;
 		}
@@ -245,8 +246,8 @@ public class Simulation extends Thread{
 				JScrollBar vbar = parent.getBar().getVerticalScrollBar();
 				vbar.setValue(vbar.getMaximum());
 		}
-		//if the user pressed the STOP button or all the simulations end : disable the Stop Button
+		//if the user pressed the STOP button or all the simulations end : disable the stop button
 		parent.setBStop(false);
-		parent.getResultArea().append("\n"+Hypervisor.cloni);	//PROVA
+		System.out.println("Clones founded: "+Hypervisor.clones);
 	}
 }

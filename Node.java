@@ -100,11 +100,13 @@ public class Node extends Thread{
 	}
 	
 	public void sendLC(LocationClaim mess){
+		if(!foundClone){	//if we have found the clone, don't proceed
 		//push the message "mess" in this node buffer "messages"
 			synchronized(messages){
 				messages.add(mess);
 				messages.notifyAll();
 			}
+		}
 	}
 	
 	public synchronized void receiveLC(LocationClaim mess){	//receive the location claim for the first time
@@ -202,8 +204,30 @@ public class Node extends Thread{
 			}
 			//**********************************************
 			if(closer!=this){ //there is a node closer to the destination
-				if(!message.getForw())	//useless if the message is already forwarded (getForw==true!)
-					message.setForw(true);	
+				if(!message.getForw()){	//useless if the message is already forwarded (getForw==true!)
+					//so,if message.getForw()==false, it is a location claim to forward...
+					message.setForw(true);
+					//...and, if protocol==LSM, we have to save in the memory the message
+					if(protocol.equals("LSM")){
+						if(energy>=en_sign){	//control if we have enough energy to verify the signature of the message
+							//remove the energy for signing the message and increase the counter of the messages signed from this node
+							energy-=en_sign;
+							sign_done++;
+							//get the coordinate of the mess.ID, if it's already present (else=null)
+							Coordinate test=m.get(message.getID());
+							if(test!=null){	//message ID already present
+								if(!test.equals(message.getCoord()))	//same id, different coordinates = we've found the CLONE!
+									founded_clone();
+								//else ID+coordinate already present, don't put it again in the hash of saved messages
+							}
+							else{	//message ID not present
+								//save the message
+								m.put(message.getID(), message.getCoord());
+							}
+						}
+					}
+				}
+				//in every case, send the message
 				if(energy>=en_send){	//control if we have enough energy to send the message
 					//remove the energy for sending the message and increase the counter of the messages sent from this node
 					energy-=en_send;
