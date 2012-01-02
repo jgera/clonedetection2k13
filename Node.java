@@ -205,7 +205,7 @@ public class Node extends Thread{
 			//**********************************************
 			if(closer!=this){ //there is a node closer to the destination
 				if(!message.getForw()){	//useless if the message is already forwarded (getForw==true!)
-					//so,if message.getForw()==false, it is a location claim to forward...
+					//so,if message.getForw()==false, it is a location claim to forward...else = already stored and checked for clones!
 					message.setForw(true);
 					//...and, if protocol==LSM, we have to save in the memory the message
 					if(protocol.equals("LSM")){
@@ -260,9 +260,6 @@ public class Node extends Thread{
 		foundClone=true;	//static field, flag for the hypervisor
 		synchronized(parent){	//let's warn the hypervisor we founded the clone
 			parent.notify();
-		}
-		synchronized(messages){	//let's warn all the nodes!
-			messages.notifyAll();
 		}
 	}
 		
