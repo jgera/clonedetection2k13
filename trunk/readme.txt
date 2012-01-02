@@ -39,7 +39,7 @@ Eyüp Serdar Canlar
 7. Run the RMI interface compiler on your implementation class:
 Type the command 
 	"rmic txtPrintImpl" 
-to create the stub used by RMI
+to create the stub used by the RMI Server
 
 8. Start the RMI registry: type in the same directory
 	"start rmiregistry"
