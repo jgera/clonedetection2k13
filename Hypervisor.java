@@ -152,7 +152,7 @@ public class Hypervisor {
 			int found=0;
 			if(Node.getFoundClone()){
 				found=1;
-				clones++;	//da togliere
+				clones++;
 			}
 			
 			//sum_x= E(xi)

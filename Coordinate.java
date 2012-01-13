@@ -3,8 +3,8 @@ public class Coordinate {
 	private double x, y;
     
     public Coordinate(double x_in, double y_in){
-        this.x = x_in;
-        this.y = y_in;
+        x = x_in;
+        y = y_in;
     }
     
     public boolean equals(Coordinate c){
