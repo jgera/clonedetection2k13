@@ -1,4 +1,3 @@
-import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class Simulation extends Thread{
 	private String proto;
 	private Integer nsim,g,n,e,e_send,e_receive,e_sign;
 	private Float p,r;
-	private static int cont_sim; 	//counter of the simulations
+	private static int cont_sim=0; 	//counter of the simulations
 	private boolean stop=false;
 
 	public Simulation(String conf_file, String host, ProjGUI par){
@@ -75,6 +74,7 @@ public class Simulation extends Thread{
 		catch(IOException e){
 			e.printStackTrace();
 			parent.getResultArea().append("\nErrore in input");
+			parent.resetInitialState();
 		}
 	}
 	
